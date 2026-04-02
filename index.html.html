@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Imperium – İnşaat Yönetim Platformu</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#f97316;--orange-d:#ea580c;--orange-l:rgba(249,115,22,.12);
+  --navy:#0f172a;--navy2:#1e293b;--slate:#334155;
+  --text:#1e293b;--muted:#64748b;--border:#e2e8f0;--bg:#f8fafc;
+  --white:#fff;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;--yellow:#f59e0b;
+  --sidebar:240px;
+}
+html,body{height:100%;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);}
+button,input,select,textarea{font-family:inherit;}
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
+
+/* ══════════════════════════════════════════
+   AUTH SCREEN
+══════════════════════════════════════════ */
+#auth-screen{
+  min-height:100vh;display:flex;align-items:stretch;
+  background:var(--navy);
+}
+.auth-left{
+  flex:1;background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
+  padding:64px;position:relative;overflow:hidden;
+}
+.auth-left::before{
+  content:'';position:absolute;top:-120px;right:-80px;
+  width:480px;height:480px;border-radius:50%;
+  background:radial-gradient(circle,rgba(249,115,22,.18) 0%,transparent 70%);
+}
+.auth-left::after{
+  content:'';position:absolute;bottom:-80px;left:-60px;
+  width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(59,130,246,.12) 0%,transparent 70%);
+}
+.auth-logo{display:flex;align-items:center;gap:12px;margin-bottom:56px;}
+.auth-logo-icon{
+  width:44px;height:44px;background:var(--orange);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+}
+.auth-logo-icon svg{fill:white;width:26px;height:26px;}
+.auth-logo-text{font-size:1.6rem;font-weight:800;color:#fff;letter-spacing:-.5px;}
+.auth-left h1{
+  font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;color:#fff;
+  line-height:1.2;letter-spacing:-.5px;margin-bottom:20px;
+  position:relative;z-index:1;
+}
+.auth-left h1 span{color:var(--orange);}
+.auth-left p{color:rgba(255,255,255,.6);font-size:.95rem;line-height:1.75;max-width:400px;position:relative;z-index:1;}
+.auth-features{margin-top:40px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1;}
+.auth-feat{display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.75);font-size:.88rem;}
+.auth-feat-dot{width:8px;height:8px;background:var(--orange);border-radius:50%;flex-shrink:0;}
+.trial-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.3);
+  color:var(--orange);padding:8px 18px;border-radius:20px;
+  font-size:.8rem;font-weight:700;margin-top:40px;position:relative;z-index:1;
+}
+.auth-right{
+  width:460px;background:var(--white);
+  display:flex;flex-direction:column;justify-content:center;padding:60px 48px;
+}
+.auth-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:36px;}
+.auth-tab{
+  padding:10px 24px;font-size:.92rem;font-weight:600;cursor:pointer;
+  color:var(--muted);border:none;background:transparent;
+  border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;
+}
+.auth-tab.active{color:var(--orange);border-bottom-color:var(--orange);}
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.form-group label{font-size:.8rem;font-weight:700;color:var(--text);letter-spacing:.3px;}
+.form-group input,.form-group select{
+  padding:11px 14px;border:1.5px solid var(--border);border-radius:9px;
+  font-size:.9rem;outline:none;transition:border-color .2s;background:var(--white);color:var(--text);
+}
+.form-group input:focus,.form-group select:focus{border-color:var(--orange);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.btn-auth{
+  width:100%;padding:13px;background:var(--orange);color:#fff;
+  border:none;border-radius:9px;font-size:.95rem;font-weight:700;
+  cursor:pointer;transition:all .2s;margin-top:4px;
+}
+.btn-auth:hover{background:var(--orange-d);transform:translateY(-1px);box-shadow:0 6px 20px rgba(249,115,22,.3);}
+.auth-divider{text-align:center;color:var(--muted);font-size:.82rem;margin:20px 0;position:relative;}
+.auth-divider::before,.auth-divider::after{
+  content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border);
+}
+.auth-divider::before{left:0;} .auth-divider::after{right:0;}
+.trial-info{
+  background:var(--orange-l);border:1px solid rgba(249,115,22,.25);
+  border-radius:10px;padding:14px 16px;margin-bottom:24px;
+}
+.trial-info p{font-size:.82rem;color:var(--orange-d);font-weight:600;line-height:1.5;}
+.trial-timer{
+  display:flex;align-items:center;gap:8px;margin-top:6px;
+  font-size:.78rem;color:var(--muted);font-weight:500;
+}
+#auth-panel-login,.#auth-panel-register{animation:fadeIn .3s ease;}
+#auth-panel-register{display:none;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ══════════════════════════════════════════
+   APP LAYOUT
+══════════════════════════════════════════ */
+#app{display:none;height:100vh;overflow:hidden;}
+.app-layout{display:flex;height:100%;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar);background:var(--navy);color:#fff;
+  display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;
+  transition:width .25s ease;z-index:50;
+}
+.sidebar-header{
+  padding:20px 16px;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;
+}
+.sidebar-logo-icon{
+  width:34px;height:34px;background:var(--orange);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.sidebar-logo-icon svg{fill:white;width:20px;height:20px;}
+.sidebar-logo-text{font-size:1.15rem;font-weight:800;letter-spacing:-.3px;}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 8px;}
+.nav-section-label{
+  font-size:.68rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  color:rgba(255,255,255,.35);padding:14px 10px 6px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;
+  cursor:pointer;transition:all .18s;color:rgba(255,255,255,.65);font-size:.86rem;font-weight:500;
+  margin-bottom:2px;
+}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.nav-item.active{background:var(--orange);color:#fff;font-weight:600;}
+.nav-item svg{width:17px;height:17px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.8;}
+.nav-item span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sidebar-footer{
+  padding:14px 12px;border-top:1px solid rgba(255,255,255,.08);
+}
+.user-card{
+  display:flex;align-items:center;gap:10px;padding:10px;
+  border-radius:9px;cursor:pointer;transition:background .2s;
+}
+.user-card:hover{background:rgba(255,255,255,.08);}
+.user-avatar{
+  width:34px;height:34px;border-radius:50%;background:var(--orange);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0;
+}
+.user-info{flex:1;overflow:hidden;}
+.user-name{font-size:.82rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.user-role{font-size:.72rem;color:rgba(255,255,255,.45);}
+.trial-sidebar{
+  margin:10px 12px;background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.25);
+  border-radius:9px;padding:10px 12px;
+}
+.trial-sidebar p{font-size:.75rem;color:rgba(255,255,255,.7);}
+.trial-sidebar strong{color:var(--orange);font-size:.8rem;}
+.trial-progress{height:4px;background:rgba(255,255,255,.1);border-radius:99px;margin-top:8px;overflow:hidden;}
+.trial-progress-bar{height:100%;background:var(--orange);border-radius:99px;transition:width .5s ease;}
+
+/* ── MAIN ── */
+.main-content{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{
+  height:58px;background:var(--white);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+}
+.topbar-title{font-size:1rem;font-weight:800;color:var(--text);flex:1;}
+.topbar-actions{display:flex;align-items:center;gap:10px;}
+.btn{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 16px;
+  border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;
+  border:none;transition:all .18s;text-decoration:none;
+}
+.btn-sm{padding:6px 12px;font-size:.78rem;}
+.btn-primary{background:var(--orange);color:#fff;}
+.btn-primary:hover{background:var(--orange-d);}
+.btn-secondary{background:var(--bg);border:1.5px solid var(--border);color:var(--text);}
+.btn-secondary:hover{border-color:var(--orange);color:var(--orange);}
+.btn-ghost{background:transparent;color:var(--muted);padding:6px 10px;}
+.btn-ghost:hover{background:var(--bg);color:var(--text);}
+.btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;}
+.icon-btn{
+  width:34px;height:34px;border-radius:8px;border:1.5px solid var(--border);
+  background:var(--white);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .18s;color:var(--muted);
+}
+.icon-btn:hover{border-color:var(--orange);color:var(--orange);}
+.icon-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
+.notif-badge{position:relative;}
+.notif-badge::after{
+  content:'3';position:absolute;top:-4px;right:-4px;
+  width:16px;height:16px;background:var(--red);border-radius:50%;
+  font-size:.6rem;color:#fff;display:flex;align-items:center;justify-content:center;
+  font-weight:700;line-height:16px;text-align:center;
+}
+.page-content{flex:1;overflow-y:auto;padding:24px;}
+
+/* ══════════════════════════════════════════
+   COMMON COMPONENTS
+══════════════════════════════════════════ */
+.page{display:none;}
+.page.active{display:block;animation:fadeIn .25s ease;}
+
+/* Cards */
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.card-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.card-header h3{font-size:.92rem;font-weight:700;color:var(--text);}
+.card-body{padding:20px;}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;}
+.stat-card{
+  background:var(--white);border:1px solid var(--border);border-radius:14px;
+  padding:20px;position:relative;overflow:hidden;transition:all .2s;
+}
+.stat-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.07);transform:translateY(-2px);}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--accent,var(--orange));
+}
+.stat-label{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.stat-value{font-size:1.9rem;font-weight:800;color:var(--text);letter-spacing:-.5px;line-height:1;}
+.stat-sub{font-size:.75rem;color:var(--muted);margin-top:6px;}
+.stat-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:99px;margin-top:6px;
+}
+.badge-green{background:rgba(34,197,94,.12);color:#16a34a;}
+.badge-red{background:rgba(239,68,68,.12);color:#dc2626;}
+.badge-orange{background:rgba(249,115,22,.12);color:var(--orange-d);}
+.badge-blue{background:rgba(59,130,246,.12);color:#2563eb;}
+.badge-yellow{background:rgba(245,158,11,.12);color:#b45309;}
+.badge-gray{background:var(--bg);color:var(--muted);}
+.stat-icon{
+  position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  background:var(--icon-bg,rgba(249,115,22,.1));
+}
+.stat-icon svg{width:22px;height:22px;stroke:var(--accent,var(--orange));fill:none;stroke-width:1.8;}
+
+/* Table */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{
+  text-align:left;padding:10px 14px;font-size:.75rem;font-weight:700;
+  color:var(--muted);text-transform:uppercase;letter-spacing:.5px;
+  border-bottom:1px solid var(--border);background:var(--bg);white-space:nowrap;
+}
+td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--text);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(249,115,22,.03);}
+.td-bold{font-weight:700;}
+.td-muted{color:var(--muted);font-size:.78rem;}
+
+/* Status pill */
+.status{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:.75rem;font-weight:600;white-space:nowrap;}
+.status::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;}
+.s-green{background:rgba(34,197,94,.1);color:#16a34a;}
+.s-orange{background:rgba(249,115,22,.1);color:var(--orange);}
+.s-red{background:rgba(239,68,68,.1);color:var(--red);}
+.s-blue{background:rgba(59,130,246,.1);color:var(--blue);}
+.s-gray{background:var(--bg);color:var(--muted);}
+.s-yellow{background:rgba(245,158,11,.1);color:var(--yellow);}
+
+/* Search & filter bar */
+.filter-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--border);}
+.search-box{
+  display:flex;align-items:center;gap:8px;background:var(--bg);
+  border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;
+  flex:1;min-width:180px;max-width:320px;
+}
+.search-box svg{width:15px;height:15px;stroke:var(--muted);fill:none;stroke-width:2;flex-shrink:0;}
+.search-box input{border:none;background:transparent;outline:none;font-size:.85rem;color:var(--text);width:100%;}
+.filter-select{
+  padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:.82rem;color:var(--text);background:var(--white);outline:none;cursor:pointer;
+}
+.filter-select:focus{border-color:var(--orange);}
+
+/* Modal */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);
+  z-index:999;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease;}
+.modal{
+  background:var(--white);border-radius:16px;width:100%;max-width:580px;
+  max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.2);
+}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-size:1rem;font-weight:800;color:var(--text);}
+.modal-close{cursor:pointer;color:var(--muted);background:transparent;border:none;padding:4px;}
+.modal-close svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;}
+.modal-body{padding:24px;}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;}
+.fg{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.fg label{font-size:.78rem;font-weight:700;color:var(--text);}
+.fg input,.fg select,.fg textarea{
+  padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:.88rem;outline:none;color:var(--text);background:var(--white);
+  font-family:inherit;transition:border-color .2s;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--orange);}
+.fg textarea{resize:vertical;min-height:80px;}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* Progress bar */
+.progress{height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
+.progress-bar{height:100%;border-radius:99px;background:var(--orange);transition:width .5s ease;}
+
+/* Avatar group */
+.avatar-group{display:flex;}
+.avatar-sm{
+  width:26px;height:26px;border-radius:50%;border:2px solid #fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.6rem;font-weight:700;color:#fff;margin-left:-6px;flex-shrink:0;
+}
+.avatar-sm:first-child{margin-left:0;}
+
+/* Empty state */
+.empty-state{text-align:center;padding:56px 24px;}
+.empty-state svg{width:48px;height:48px;stroke:var(--border);fill:none;stroke-width:1.5;margin:0 auto 16px;}
+.empty-state h3{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:6px;}
+.empty-state p{font-size:.85rem;color:var(--muted);}
+
+/* Toast */
+#toast{
+  position:fixed;bottom:24px;right:24px;z-index:9999;
+  background:var(--navy);color:#fff;padding:12px 20px;
+  border-radius:10px;font-size:.85rem;font-weight:600;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+  transform:translateY(80px);opacity:0;transition:all .3s ease;
+  display:flex;align-items:center;gap:10px;
+}
+#toast.show{transform:translateY(0);opacity:1;}
+#toast svg{width:18px;height:18px;flex-shrink:0;}
+
+/* Chart placeholder */
+.chart-area{
+  height:200px;background:linear-gradient(180deg,rgba(249,115,22,.05) 0%,transparent 100%);
+  border-radius:10px;display:flex;align-items:flex-end;padding:16px;gap:8px;
+  overflow:hidden;
+}
+.chart-bar{
+  flex:1;background:var(--orange);border-radius:4px 4px 0 0;opacity:.7;
+  transition:opacity .2s;cursor:pointer;position:relative;
+}
+.chart-bar:hover{opacity:1;}
+.chart-bar-label{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:.65rem;color:var(--muted);white-space:nowrap;}
+
+/* ══════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════ */
+.welcome-bar{
+  background:linear-gradient(135deg,var(--navy) 0%,#1e3a5f 100%);
+  border-radius:14px;padding:24px 28px;color:#fff;margin-bottom:24px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.welcome-bar::after{
+  content:'';position:absolute;right:-40px;top:-40px;
+  width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(249,115,22,.2) 0%,transparent 70%);
+}
+.welcome-bar h2{font-size:1.25rem;font-weight:800;margin-bottom:4px;}
+.welcome-bar p{font-size:.85rem;color:rgba(255,255,255,.65);}
+.welcome-bar .trial-chip{
+  background:rgba(249,115,22,.2);border:1px solid rgba(249,115,22,.4);
+  color:var(--orange);padding:8px 18px;border-radius:99px;
+  font-size:.8rem;font-weight:700;position:relative;z-index:1;white-space:nowrap;
+}
+.activity-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.activity-item:last-child{border-bottom:none;}
+.activity-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;margin-top:4px;}
+.activity-text{flex:1;font-size:.83rem;color:var(--text);}
+.activity-time{font-size:.75rem;color:var(--muted);white-space:nowrap;}
+
+/* Gantt-like */
+.gantt-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);}
+.gantt-row:last-child{border-bottom:none;}
+.gantt-label{width:160px;font-size:.8rem;font-weight:600;color:var(--text);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.gantt-bar-wrap{flex:1;background:var(--bg);border-radius:99px;height:14px;position:relative;overflow:hidden;}
+.gantt-fill{height:100%;border-radius:99px;background:var(--orange);opacity:.75;}
+.gantt-pct{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:.65rem;font-weight:700;color:var(--text);}
+
+/* ══════════════════════════════════════════
+   PROJECTS PAGE
+══════════════════════════════════════════ */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.proj-card{
+  background:var(--white);border:1px solid var(--border);border-radius:14px;
+  padding:20px;transition:all .2s;cursor:pointer;
+}
+.proj-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.08);transform:translateY(-2px);border-color:var(--orange);}
+.proj-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.proj-type{font-size:.7rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--orange);}
+.proj-name{font-size:.98rem;font-weight:800;color:var(--text);margin:4px 0;}
+.proj-loc{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:4px;}
+.proj-loc svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;}
+.proj-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:16px 0;}
+.proj-stat{text-align:center;}
+.proj-stat-val{font-size:.95rem;font-weight:800;color:var(--text);}
+.proj-stat-lbl{font-size:.68rem;color:var(--muted);}
+.proj-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px;}
+
+/* ══════════════════════════════════════════
+   PURCHASE / ORDERS
+══════════════════════════════════════════ */
+.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-items:start;}
+.kanban-col{background:var(--bg);border-radius:12px;padding:12px;}
+.kanban-col-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.kanban-col-title{font-size:.8rem;font-weight:700;color:var(--text);}
+.kanban-count{
+  width:22px;height:22px;border-radius:50%;background:var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--muted);
+}
+.kanban-card{
+  background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:12px;margin-bottom:8px;cursor:pointer;transition:all .18s;
+}
+.kanban-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);border-color:var(--orange);}
+.kanban-card h4{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:6px;}
+.kanban-card p{font-size:.75rem;color:var(--muted);margin-bottom:8px;}
+.kanban-card-footer{display:flex;align-items:center;justify-content:space-between;}
+
+/* ══════════════════════════════════════════
+   DEFECT LIST (Hasar-Eksiklik)
+══════════════════════════════════════════ */
+.defect-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.defect-card{
+  background:var(--white);border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;transition:all .2s;cursor:pointer;
+}
+.defect-card:hover{box-shadow:0 6px 18px rgba(0,0,0,.08);border-color:var(--orange);}
+.defect-img{height:140px;background:var(--bg);display:flex;align-items:center;justify-content:center;position:relative;}
+.defect-img-ph{width:48px;height:48px;stroke:var(--border);fill:none;stroke-width:1.5;}
+.defect-priority{
+  position:absolute;top:10px;right:10px;padding:3px 10px;border-radius:99px;font-size:.7rem;font-weight:700;
+}
+.p-high{background:rgba(239,68,68,.15);color:var(--red);}
+.p-med{background:rgba(245,158,11,.15);color:var(--yellow);}
+.p-low{background:rgba(34,197,94,.15);color:#16a34a;}
+.defect-body{padding:14px;}
+.defect-body h4{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px;}
+.defect-body p{font-size:.75rem;color:var(--muted);margin-bottom:10px;}
+.defect-meta{display:flex;align-items:center;justify-content:space-between;}
+
+/* ══════════════════════════════════════════
+   FINANCE
+══════════════════════════════════════════ */
+.finance-summary{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;
+}
+.finance-card{
+  background:var(--white);border:1px solid var(--border);border-radius:14px;
+  padding:22px;text-align:center;
+}
+.finance-card .amount{font-size:1.6rem;font-weight:800;letter-spacing:-.5px;}
+.finance-card .label{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px;}
+
+/* ══════════════════════════════════════════
+   SALES CRM
+══════════════════════════════════════════ */
+.pipeline{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;}
+.pipeline-col{min-width:220px;background:var(--bg);border-radius:12px;padding:12px;flex-shrink:0;}
+.pipeline-header{margin-bottom:10px;}
+.pipeline-title{font-size:.78rem;font-weight:700;color:var(--text);}
+.pipeline-amount{font-size:.72rem;color:var(--muted);}
+.pipeline-card{
+  background:var(--white);border:1px solid var(--border);border-radius:9px;
+  padding:12px;margin-bottom:8px;cursor:pointer;transition:all .18s;
+}
+.pipeline-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.07);border-color:var(--orange);}
+.pipeline-card h4{font-size:.82rem;font-weight:700;margin-bottom:4px;}
+.pipeline-card p{font-size:.72rem;color:var(--muted);}
+.pipeline-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+
+/* ══════════════════════════════════════════
+   TASK ASSIGNMENT
+══════════════════════════════════════════ */
+.task-list{display:flex;flex-direction:column;gap:8px;}
+.task-item{
+  background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;display:flex;align-items:center;gap:14px;
+  transition:all .18s;cursor:pointer;
+}
+.task-item:hover{border-color:var(--orange);box-shadow:0 4px 12px rgba(0,0,0,.06);}
+.task-check{
+  width:20px;height:20px;border-radius:50%;border:2px solid var(--border);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:all .18s;cursor:pointer;
+}
+.task-check.done{background:var(--green);border-color:var(--green);}
+.task-check.done svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:3;}
+.task-info{flex:1;}
+.task-title{font-size:.85rem;font-weight:600;color:var(--text);}
+.task-title.done{text-decoration:line-through;color:var(--muted);}
+.task-meta{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.task-right{display:flex;align-items:center;gap:8px;}
+
+/* ══════════════════════════════════════════
+   REPORTS
+══════════════════════════════════════════ */
+.report-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+.report-card{
+  background:var(--white);border:1px solid var(--border);border-radius:14px;
+  padding:20px;transition:all .2s;cursor:pointer;
+}
+.report-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.08);border-color:var(--orange);}
+.report-icon{
+  width:44px;height:44px;border-radius:12px;background:var(--orange-l);
+  display:flex;align-items:center;justify-content:center;margin-bottom:14px;
+}
+.report-icon svg{width:22px;height:22px;stroke:var(--orange);fill:none;stroke-width:1.8;}
+.report-card h3{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:6px;}
+.report-card p{font-size:.8rem;color:var(--muted);line-height:1.55;}
+
+/* ══════════════════════════════════════════
+   SETTINGS
+══════════════════════════════════════════ */
+.settings-grid{display:grid;grid-template-columns:220px 1fr;gap:20px;}
+.settings-menu{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.settings-menu-item{
+  display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;
+  transition:all .18s;color:var(--muted);font-size:.85rem;font-weight:500;border-bottom:1px solid var(--border);
+}
+.settings-menu-item:last-child{border-bottom:none;}
+.settings-menu-item:hover{background:var(--bg);color:var(--text);}
+.settings-menu-item.active{background:var(--orange-l);color:var(--orange);font-weight:700;}
+.settings-menu-item svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
+.settings-panel{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:24px;}
+.settings-panel h3{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:6px;}
+.settings-panel p{font-size:.83rem;color:var(--muted);margin-bottom:24px;}
+.settings-section{margin-bottom:24px;}
+.settings-section h4{font-size:.8rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;}
+.toggle-row-info h5{font-size:.85rem;font-weight:600;color:var(--text);}
+.toggle-row-info p{font-size:.78rem;color:var(--muted);}
+.toggle{position:relative;width:40px;height:22px;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{
+  position:absolute;inset:0;cursor:pointer;border-radius:99px;
+  background:var(--border);transition:.3s;
+}
+.toggle-slider::before{
+  content:'';position:absolute;height:16px;width:16px;
+  left:3px;bottom:3px;background:white;border-radius:50%;
+  transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.toggle input:checked+.toggle-slider{background:var(--orange);}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px);}
+
+/* ══════════════════════════════════════════
+   INSPECTION (Denetlemeler)
+══════════════════════════════════════════ */
+.checklist-group{margin-bottom:20px;}
+.checklist-group-title{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.checklist-item{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;
+  border:1px solid var(--border);border-radius:8px;margin-bottom:6px;
+  background:var(--white);cursor:pointer;transition:all .18s;
+}
+.checklist-item:hover{border-color:var(--orange);}
+.check-box{
+  width:18px;height:18px;border-radius:4px;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;
+}
+.check-box.checked{background:var(--green);border-color:var(--green);}
+.check-box.checked svg{display:block;}
+.check-box svg{display:none;width:10px;height:10px;stroke:#fff;fill:none;stroke-width:3;}
+.checklist-label{font-size:.83rem;color:var(--text);}
+.checklist-label.checked{text-decoration:line-through;color:var(--muted);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .auth-left{display:none;}
+  .auth-right{width:100%;}
+  .sidebar{width:58px;}
+  .sidebar-logo-text,.nav-item span,.user-info,.sidebar-footer .trial-sidebar{display:none;}
+  .kanban,.finance-summary{grid-template-columns:1fr;}
+  .settings-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ AUTH SCREEN ══ -->
+<div id="auth-screen">
+  <div class="auth-left">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      </div>
+      <span class="auth-logo-text">Imperium</span>
+    </div>
+    <h1>İnşaat projelerini<br><span>akıllıca</span> yönet</h1>
+    <p>Saha ile ofisi tek platformda birleştir. Zamanında, bütçe dahilinde, kaliteli teslimat.</p>
+    <div class="auth-features">
+      <div class="auth-feat"><div class="auth-feat-dot"></div>Teknik Ofis, Satın Alma, Proje Yönetimi</div>
+      <div class="auth-feat"><div class="auth-feat-dot"></div>Kalite & Güvenlik, Finans, Satış modülleri</div>
+      <div class="auth-feat"><div class="auth-feat-dot"></div>Web + Mobil uygulama desteği</div>
+      <div class="auth-feat"><div class="auth-feat-dot"></div>Sınırsız proje, günlük yedekleme</div>
+      <div class="auth-feat"><div class="auth-feat-dot"></div>Gerçek zamanlı raporlama & denetleme</div>
+    </div>
+    <div class="trial-badge">⚡ 14 Gün Ücretsiz Deneme – Kredi Kartı Gerekmez</div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Giriş Yap</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Ücretsiz Deneyin</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="auth-panel-login">
+      <div class="form-group">
+        <label>E-posta Adresi</label>
+        <input type="email" id="login-email" placeholder="ornek@sirket.com" value="demo@imperium.com"/>
+      </div>
+      <div class="form-group">
+        <label>Şifre</label>
+        <input type="password" id="login-pass" placeholder="••••••••" value="demo123"/>
+      </div>
+      <button class="btn-auth" onclick="doLogin()">Giriş Yap →</button>
+      <p style="font-size:.78rem;color:var(--muted);text-align:center;margin-top:16px;">
+        Demo için: <strong>demo@imperium.com</strong> / <strong>demo123</strong>
+      </p>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="auth-panel-register" style="display:none;">
+      <div class="trial-info">
+        <p>🎉 <strong>14 gün ücretsiz!</strong> Kredi kartı gerekmez. İstediğiniz zaman iptal edin.</p>
+        <div class="trial-timer">⏱ Kayıt olduktan sonra 14 gün sayılmaya başlar</div>
+      </div>
+      <div class="fg-row">
+        <div class="form-group">
+          <label>Ad</label>
+          <input type="text" id="reg-first" placeholder="Ahmet"/>
+        </div>
+        <div class="form-group">
+          <label>Soyad</label>
+          <input type="text" id="reg-last" placeholder="Yılmaz"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>E-posta</label>
+        <input type="email" id="reg-email" placeholder="ornek@sirket.com"/>
+      </div>
+      <div class="form-group">
+        <label>Şirket Adı</label>
+        <input type="text" id="reg-company" placeholder="ABC İnşaat A.Ş."/>
+      </div>
+      <div class="form-group">
+        <label>Telefon</label>
+        <input type="tel" id="reg-phone" placeholder="+90 5xx xxx xx xx"/>
+      </div>
+      <div class="form-group">
+        <label>Şifre</label>
+        <input type="password" id="reg-pass" placeholder="En az 8 karakter"/>
+      </div>
+      <div class="form-group">
+        <label>Plan</label>
+        <select>
+          <option>Başlangıç – $29/ay (14 gün ücretsiz)</option>
+          <option>Standart – $125/ay (14 gün ücretsiz)</option>
+          <option selected>Profesyonel – $275/ay (14 gün ücretsiz)</option>
+          <option>Premium – $700/ay (14 gün ücretsiz)</option>
+        </select>
+      </div>
+      <button class="btn-auth" onclick="doRegister()">14 Günlük Denemeyi Başlat →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        </div>
+        <span class="sidebar-logo-text">Imperium</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Ana Menü</div>
+        <div class="nav-item active" onclick="goPage('dashboard',this)">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="goPage('projects',this)">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+          <span>Projeler</span>
+        </div>
+
+        <div class="nav-section-label">Modüller</div>
+        <div class="nav-item" onclick="goPage('technical',this)">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>Teknik Ofis</span>
+        </div>
+        <div class="nav-item" onclick="goPage('purchase',this)">
+          <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+          <span>Satın Alma</span>
+        </div>
+        <div class="nav-item" onclick="goPage('schedule',this)">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>İş Programı</span>
+        </div>
+        <div class="nav-item" onclick="goPage('defects',this)">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Hasar-Eksiklik</span>
+        </div>
+        <div class="nav-item" onclick="goPage('inspection',this)">
+          <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          <span>Denetlemeler</span>
+        </div>
+        <div class="nav-item" onclick="goPage('dailyreport',this)">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <span>Günlük Rapor</span>
+        </div>
+        <div class="nav-item" onclick="goPage('rfi',this)">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Bilgi Talepleri</span>
+        </div>
+        <div class="nav-item" onclick="goPage('tasks',this)">
+          <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          <span>Görevlendirme</span>
+        </div>
+        <div class="nav-item" onclick="goPage('finance',this)">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          <span>Finans</span>
+        </div>
+        <div class="nav-item" onclick="goPage('sales',this)">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          <span>Satış</span>
+        </div>
+        <div class="nav-item" onclick="goPage('reports',this)">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Raporlama</span>
+        </div>
+
+        <div class="nav-section-label">Sistem</div>
+        <div class="nav-item" onclick="goPage('settings',this)">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          <span>Ayarlar</span>
+        </div>
+      </nav>
+
+      <div class="trial-sidebar">
+        <p>⏳ Deneme süresi</p>
+        <strong id="trial-days-left">14 gün kaldı</strong>
+        <div class="trial-progress"><div class="trial-progress-bar" id="trial-bar" style="width:100%"></div></div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-card" onclick="goPage('settings',document.querySelector('[onclick*=settings]'))">
+          <div class="user-avatar" id="sb-avatar">AY</div>
+          <div class="user-info">
+            <div class="user-name" id="sb-name">Ahmet Yılmaz</div>
+            <div class="user-role">Proje Müdürü</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+      <div class="topbar">
+        <span class="topbar-title" id="page-title">Dashboard</span>
+        <div class="topbar-actions">
+          <div class="icon-btn notif-badge" title="Bildirimler">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+          </div>
+          <div class="icon-btn" title="Arama">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <button class="btn btn-primary" id="topbar-add-btn" onclick="openModal('modal-add')">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Yeni Ekle
+          </button>
+        </div>
+      </div>
+
+      <div class="page-content">
+
+        <!-- ══ DASHBOARD ══ -->
+        <div class="page active" id="page-dashboard">
+          <div class="welcome-bar">
+            <div>
+              <h2>Hoş geldin, <span id="welcome-name">Ahmet</span> 👋</h2>
+              <p>ABC İnşaat A.Ş. · Bugün <span id="today-date"></span></p>
+            </div>
+            <div class="trial-chip">⚡ 14 gün ücretsiz deneme</div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card" style="--accent:var(--blue);--icon-bg:rgba(59,130,246,.1)">
+              <div class="stat-label">Aktif Proje</div>
+              <div class="stat-value">8</div>
+              <div class="badge badge-blue" style="display:inline-flex;align-items:center;gap:4px;background:rgba(59,130,246,.1);color:var(--blue);padding:2px 8px;border-radius:99px;font-size:.72rem;font-weight:600;margin-top:6px;">+2 bu ay</div>
+              <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+            </div>
+            <div class="stat-card" style="--accent:var(--orange)">
+              <div class="stat-label">Açık Görev</div>
+              <div class="stat-value">34</div>
+              <span class="status s-orange" style="margin-top:6px;">12 acil</span>
+              <div class="stat-icon"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+            </div>
+            <div class="stat-card" style="--accent:var(--red);--icon-bg:rgba(239,68,68,.1)">
+              <div class="stat-label">Eksiklik / Hasar</div>
+              <div class="stat-value">17</div>
+              <span class="status s-red" style="margin-top:6px;">5 kritik</span>
+              <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            </div>
+            <div class="stat-card" style="--accent:var(--green);--icon-bg:rgba(34,197,94,.1)">
+              <div class="stat-label">Tahsilat (Bu Ay)</div>
+              <div class="stat-value">₺2.4M</div>
+              <span class="badge-green badge" style="display:inline-flex;gap:4px;align-items:center;background:rgba(34,197,94,.1);color:#16a34a;padding:2px 8px;border-radius:99px;font-size:.72rem;font-weight:600;margin-top:6px;">↑ %18</span>
+              <div class="stat-icon" style="--icon-bg:rgba(34,197,94,.1)"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+            </div>
+            <div class="stat-card" style="--accent:var(--yellow);--icon-bg:rgba(245,158,11,.1)">
+              <div class="stat-label">Bekleyen Sipariş</div>
+              <div class="stat-value">23</div>
+              <span class="status s-yellow" style="margin-top:6px;">8 onay bekliyor</span>
+              <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg></div>
+            </div>
+            <div class="stat-card" style="--accent:#8b5cf6;--icon-bg:rgba(139,92,246,.1)">
+              <div class="stat-label">Aktif Kullanıcı</div>
+              <div class="stat-value">28</div>
+              <div class="stat-sub">Proje Müdürü, Şantiye Şefi, Mühendis...</div>
+              <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+            <div class="card">
+              <div class="card-header"><h3>Proje İlerleme Durumu</h3></div>
+              <div class="card-body">
+                <div class="gantt-row">
+                  <span class="gantt-label">Kule Rezidans</span>
+                  <div class="gantt-bar-wrap"><div class="gantt-fill" style="width:72%"></div><span class="gantt-pct">72%</span></div>
+                </div>
+                <div class="gantt-row">
+                  <span class="gantt-label">Çarşı AVM</span>
+                  <div class="gantt-bar-wrap"><div class="gantt-fill" style="width:45%"></div><span class="gantt-pct">45%</span></div>
+                </div>
+                <div class="gantt-row">
+                  <span class="gantt-label">Villa Sitesi A Blok</span>
+                  <div class="gantt-bar-wrap"><div class="gantt-fill" style="width:88%"></div><span class="gantt-pct">88%</span></div>
+                </div>
+                <div class="gantt-row">
+                  <span class="gantt-label">Hastane Ek Bina</span>
+                  <div class="gantt-bar-wrap"><div class="gantt-fill" style="width:31%"></div><span class="gantt-pct">31%</span></div>
+                </div>
+                <div class="gantt-row">
+                  <span class="gantt-label">Sanayi Yapısı</span>
+                  <div class="gantt-bar-wrap"><div class="gantt-fill" style="width:60%"></div><span class="gantt-pct">60%</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><h3>Aylık Sipariş & Harcama</h3></div>
+              <div class="card-body">
+                <div class="chart-area" id="dash-chart"></div>
+                <div style="display:flex;gap:16px;margin-top:20px;flex-wrap:wrap;">
+                  <div><div style="font-size:.72rem;color:var(--muted);">Toplam Sipariş</div><div style="font-weight:800;font-size:1.1rem;">₺4.8M</div></div>
+                  <div><div style="font-size:.72rem;color:var(--muted);">Ödenen</div><div style="font-weight:800;font-size:1.1rem;color:var(--green);">₺3.2M</div></div>
+                  <div><div style="font-size:.72rem;color:var(--muted);">Bekleyen</div><div style="font-weight:800;font-size:1.1rem;color:var(--orange);">₺1.6M</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;">
+            <div class="card">
+              <div class="card-header"><h3>Son Aktiviteler</h3><span class="badge-gray badge" style="background:var(--bg);padding:3px 10px;border-radius:99px;font-size:.72rem;font-weight:600;color:var(--muted);">Bugün</span></div>
+              <div class="card-body">
+                <div class="activity-item"><div class="activity-dot"></div><div class="activity-text"><strong>Kule Rezidans</strong> – Beton dökümü tamamlandı (B Blok 8. Kat)</div><span class="activity-time">09:14</span></div>
+                <div class="activity-item"><div class="activity-dot" style="background:var(--red)"></div><div class="activity-text"><strong>Çarşı AVM</strong> – Eksiklik kaydı eklendi: Çatı yalıtım sorunu</div><span class="activity-time">10:02</span></div>
+                <div class="activity-item"><div class="activity-dot" style="background:var(--blue)"></div><div class="activity-text"><strong>Hastane</strong> – 3 yeni sipariş onaylandı (Demir, Beton, Boya)</div><span class="activity-time">11:30</span></div>
+                <div class="activity-item"><div class="activity-dot" style="background:var(--green)"></div><div class="activity-text"><strong>Villa Sitesi</strong> – Daire 14 tamamlandı, müşteriye teslim edildi</div><span class="activity-time">13:45</span></div>
+                <div class="activity-item"><div class="activity-dot" style="background:var(--yellow)"></div><div class="activity-text"><strong>Sanayi Yapısı</strong> – Günlük rapor girildi (45 işçi, normal)</div><span class="activity-time">16:00</span></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><h3>Yaklaşan Görevler</h3></div>
+              <div class="card-body" style="padding:12px;">
+                <div class="task-item" style="padding:10px 12px;">
+                  <div class="task-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="task-info"><div class="task-title">Zemin etüdü raporu incele</div><div class="task-meta">Bugün · Kule Rezidans</div></div>
+                </div>
+                <div class="task-item" style="padding:10px 12px;">
+                  <div class="task-check done"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="task-info"><div class="task-title done">Beton sipariş onayı</div><div class="task-meta">Tamamlandı · AVM</div></div>
+                </div>
+                <div class="task-item" style="padding:10px 12px;">
+                  <div class="task-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="task-info"><div class="task-title">Yangın denetim formu</div><div class="task-meta">Yarın · Hastane</div></div>
+                </div>
+                <div class="task-item" style="padding:10px 12px;">
+                  <div class="task-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                  <div class="task-info"><div class="task-title">Hakediş hazırla – Mart</div><div class="task-meta">3 gün · Sanayi</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ PROJECTS ══ -->
+        <div class="page" id="page-projects">
+          <div class="filter-bar">
+            <div class="search-box"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Proje ara…"/></div>
+            <select class="filter-select"><option>Tüm Durumlar</option><option>Devam Ediyor</option><option>Tamamlandı</option><option>Beklemede</option></select>
+            <select class="filter-select"><option>Tüm Tipler</option><option>Konut</option><option>Ticari</option><option>Endüstriyel</option><option>Altyapı</option></select>
+          </div>
+          <div class="card-body">
+            <div class="projects-grid" id="projects-grid"></div>
+          </div>
+        </div>
+
+        <!-- ══ TECHNICAL OFFICE ══ -->
+        <div class="page" id="page-technical">
+          <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+            <div class="stat-card" style="--accent:var(--blue)"><div class="stat-label">Toplam Keşif</div><div class="stat-value">12</div><span class="status s-blue" style="margin-top:6px;">4 aktif</span></div>
+            <div class="stat-card" style="--accent:var(--green)"><div class="stat-label">Sözleşme</div><div class="stat-value">9</div><span class="status s-green" style="margin-top:6px;">₺18.4M toplam</span></div>
+            <div class="stat-card"><div class="stat-label">Hakediş</div><div class="stat-value">31</div><span class="status s-orange" style="margin-top:6px;">5 bekliyor</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Hakediş Takibi</h3><button class="btn btn-primary btn-sm" onclick="openModal('modal-hakedis')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Yeni Hakediş</button></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>No</th><th>Proje</th><th>Dönem</th><th>Tutar</th><th>Durum</th><th>Tarih</th><th></th></tr></thead>
+                <tbody id="hakedis-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card" style="margin-top:16px;">
+            <div class="card-header"><h3>Sözleşmeler</h3><button class="btn btn-primary btn-sm" onclick="openModal('modal-sozlesme')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Yeni Sözleşme</button></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Proje</th><th>Taşeron</th><th>Tutar</th><th>Başlangıç</th><th>Bitiş</th><th>Durum</th></tr></thead>
+                <tbody id="sozlesme-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ PURCHASE ══ -->
+        <div class="page" id="page-purchase">
+          <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);">
+            <div class="stat-card" style="--accent:var(--yellow)"><div class="stat-label">Talep Bekliyor</div><div class="stat-value">8</div></div>
+            <div class="stat-card" style="--accent:var(--blue)"><div class="stat-label">Siparişte</div><div class="stat-value">15</div></div>
+            <div class="stat-card" style="--accent:var(--orange)"><div class="stat-label">Teslim Bekliyor</div><div class="stat-value">7</div></div>
+            <div class="stat-card" style="--accent:var(--green)"><div class="stat-label">Teslim Edildi</div><div class="stat-value">42</div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Sipariş Panosu</h3><button class="btn btn-primary btn-sm" onclick="openModal('modal-siparis')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Yeni Sipariş</button></div>
+            <div class="card-body"><div class="kanban" id="kanban-board"></div></div>
+          </div>
+        </div>
+
+        <!-- ══ SCHEDULE ══ -->
+        <div class="page" id="page-schedule">
+          <div class="card">
+            <div class="card-header"><h3>İş Programı – Kule Rezidans</h3>
+              <div style="display:flex;gap:8px;">
+                <select class="filter-select"><option>Kule Rezidans</option><option>Çarşı AVM</option><option>Villa Sitesi</option><option>Hastane Ek Bina</option></select>
+                <button class="btn btn-primary btn-sm" onclick="openModal('modal-isprogram')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>İş Ekle</button>
+              </div>
+            </div>
+            <div class="card-body" id="schedule-body"></div>
+          </div>
+        </div>
+
+        <!-- ══ DEFECTS ══ -->
+        <div class="page" id="page-defects">
+          <div class="filter-bar">
+            <div class="search-box"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Eksiklik ara…"/></div>
+            <select class="filter-select"><option>Tüm Öncelikler</option><option>Kritik</option><option>Orta</option><option>Düşük</option></select>
+            <select class="filter-select"><option>Tüm Durumlar</option><option>Açık</option><option>İşlemde</option><option>Kapalı</option></select>
+            <button class="btn btn-primary btn-sm" onclick="openModal('modal-defect')" style="margin-left:auto"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Eksiklik Ekle</button>
+          </div>
+          <div class="card-body"><div class="defect-grid" id="defect-grid"></div></div>
+        </div>
+
+        <!-- ══ INSPECTION ══ -->
+        <div class="page" id="page-inspection">
+          <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+            <div class="stat-card" style="--accent:var(--green)"><div class="stat-label">Tamamlanan Form</div><div class="stat-value">47</div></div>
+            <div class="stat-card" style="--accent:var(--orange)"><div class="stat-label">Devam Eden</div><div class="stat-value">8</div></div>
+            <div class="stat-card" style="--accent:var(--red)"><div class="stat-label">Uygunsuz</div><div class="stat-value">3</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="card">
+              <div class="card-header"><h3>🔥 Yangın Güvenlik Denetimi</h3><span class="status s-orange">Devam Ediyor</span></div>
+              <div class="card-body" id="inspection-body"></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h3>📋 Yapı Kalite Kontrol</h3><span class="status s-green">Tamamlandı</span></div>
+              <div class="card-body" id="inspection-body2"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ DAILY REPORT ══ -->
+        <div class="page" id="page-dailyreport">
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><h3>Günlük Rapor Oluştur</h3><span class="badge-orange badge" style="background:rgba(249,115,22,.1);color:var(--orange-d);padding:3px 10px;border-radius:99px;font-size:.75rem;font-weight:600;">Bugün: <span id="report-date"></span></span></div>
+            <div class="card-body">
+              <div class="fg-row">
+                <div class="fg"><label>Proje</label><select><option>Kule Rezidans</option><option>Çarşı AVM</option><option>Villa Sitesi</option></select></div>
+                <div class="fg"><label>Hava Durumu</label><select><option>☀️ Güneşli</option><option>⛅ Parçalı Bulutlu</option><option>🌧️ Yağmurlu</option><option>❄️ Karlı</option></select></div>
+              </div>
+              <div class="fg-row">
+                <div class="fg"><label>Çalışan İşçi Sayısı</label><input type="number" value="45" min="0"/></div>
+                <div class="fg"><label>Çalışan Makine Sayısı</label><input type="number" value="8" min="0"/></div>
+              </div>
+              <div class="fg"><label>Günün Yapılan İşleri</label><textarea rows="3" placeholder="Bugün yapılan işleri detaylıca yazın…">B Blok 8. kat kolon dökümü tamamlandı. Zemin kat duvarları örüldü. Asansör kuyusu forması hazırlandı.</textarea></div>
+              <div class="fg"><label>Notlar / Olaylar</label><textarea rows="2" placeholder="Herhangi bir olay, gecikme veya önemli not…">İş güvenliği denetimi yapıldı, uygunsuzluk tespit edilmedi.</textarea></div>
+              <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px;">
+                <button class="btn btn-secondary">Taslak Kaydet</button>
+                <button class="btn btn-primary" onclick="showToast('✅','Günlük rapor başarıyla kaydedildi')">Raporu Yayınla</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Geçmiş Raporlar</h3></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Tarih</th><th>Proje</th><th>İşçi</th><th>Makine</th><th>Hava</th><th>Durum</th><th></th></tr></thead>
+                <tbody id="daily-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ RFI ══ -->
+        <div class="page" id="page-rfi">
+          <div class="filter-bar">
+            <div class="search-box"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Bilgi talebi ara…"/></div>
+            <select class="filter-select"><option>Tüm Projeler</option><option>Kule Rezidans</option><option>Çarşı AVM</option></select>
+            <select class="filter-select"><option>Tüm Durumlar</option><option>Açık</option><option>Yanıtlandı</option><option>Kapalı</option></select>
+            <button class="btn btn-primary btn-sm" onclick="openModal('modal-rfi')" style="margin-left:auto"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Yeni Bilgi Talebi</button>
+          </div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>RFI No</th><th>Konu</th><th>Proje</th><th>Gönderen</th><th>Alıcı</th><th>Maliyet Etkisi</th><th>Süre Etkisi</th><th>Durum</th><th>Tarih</th></tr></thead>
+                <tbody id="rfi-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ TASKS ══ -->
+        <div class="page" id="page-tasks">
+          <div class="filter-bar">
+            <div class="search-box"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Görev ara…"/></div>
+            <select class="filter-select"><option>Tüm Projeler</option><option>Kule Rezidans</option><option>Çarşı AVM</option></select>
+            <select class="filter-select"><option>Tüm Öncelikler</option><option>Kritik</option><option>Yüksek</option><option>Normal</option></select>
+            <button class="btn btn-primary btn-sm" onclick="openModal('modal-task')" style="margin-left:auto"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Görev Ekle</button>
+          </div>
+          <div class="card-body"><div class="task-list" id="task-list"></div></div>
+        </div>
+
+        <!-- ══ FINANCE ══ -->
+        <div class="page" id="page-finance">
+          <div class="finance-summary">
+            <div class="finance-card"><div class="amount" style="color:var(--green)">₺12.4M</div><div class="label">Toplam Tahsilat</div></div>
+            <div class="finance-card"><div class="amount" style="color:var(--orange)">₺4.1M</div><div class="label">Bekleyen Tahsilat</div></div>
+            <div class="finance-card"><div class="amount" style="color:var(--blue)">₺18.5M</div><div class="label">Toplam Sözleşme Bedeli</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="card">
+              <div class="card-header"><h3>Tahsilat Listesi</h3><button class="btn btn-primary btn-sm" onclick="openModal('modal-tahsilat')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Tahsilat Ekle</button></div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Proje</th><th>Tutar</th><th>Tarih</th><th>Durum</th></tr></thead>
+                  <tbody id="finance-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h3>Finansal Özet</h3></div>
+              <div class="card-body">
+                <div class="chart-area" id="finance-chart"></div>
+                <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px;" id="finance-breakdown"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ SALES ══ -->
+        <div class="page" id="page-sales">
+          <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);">
+            <div class="stat-card" style="--accent:var(--blue)"><div class="stat-label">Potansiyel Müşteri</div><div class="stat-value">38</div></div>
+            <div class="stat-card" style="--accent:var(--orange)"><div class="stat-label">Teklif Verildi</div><div class="stat-value">14</div></div>
+            <div class="stat-card" style="--accent:var(--green)"><div class="stat-label">Satış Tamamlandı</div><div class="stat-value">6</div></div>
+            <div class="stat-card" style="--accent:var(--yellow)"><div class="stat-label">Beklenen Ciro</div><div class="stat-value">₺9.2M</div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Satış Hattı</h3><button class="btn btn-primary btn-sm" onclick="openModal('modal-sales')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Müşteri Ekle</button></div>
+            <div class="card-body"><div class="pipeline" id="sales-pipeline"></div></div>
+          </div>
+        </div>
+
+        <!-- ══ REPORTS ══ -->
+        <div class="page" id="page-reports">
+          <div class="report-grid">
+            <div class="report-card" onclick="showToast('📊','Rapor hazırlanıyor…')">
+              <div class="report-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+              <h3>Proje İlerleme Raporu</h3>
+              <p>Tüm projelerin tamamlanma yüzdeleri, gecikme analizi ve kritik yol bilgileri.</p>
+            </div>
+            <div class="report-card" onclick="showToast('📊','Rapor hazırlanıyor…')">
+              <div class="report-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+              <h3>Finansal Rapor</h3>
+              <p>Tahsilat, harcama, kâr/zarar özeti ve bütçe vs gerçekleşen karşılaştırması.</p>
+            </div>
+            <div class="report-card" onclick="showToast('📊','Rapor hazırlanıyor…')">
+              <div class="report-icon"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg></div>
+              <h3>Satın Alma Raporu</h3>
+              <p>Sipariş tarihleri, tedarikçi performansı ve stok durumu özeti.</p>
+            </div>
+            <div class="report-card" onclick="showToast('📊','Rapor hazırlanıyor…')">
+              <div class="report-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+              <h3>Kalite & Güvenlik Raporu</h3>
+              <p>Hasar-eksiklik listesi, denetim sonuçları ve uygunsuzluk trendleri.</p>
+            </div>
+            <div class="report-card" onclick="showToast('📊','Rapor hazırlanıyor…')">
+              <div class="report-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+              <h3>İnsan Kaynakları Raporu</h3>
+              <p>Çalışan bazlı üretkenlik, devamsızlık ve atanan görev dağılımı.</p>
+            </div>
+            <div class="report-card" onclick="showToast('📊','Rapor hazırlanıyor…')">
+              <div class="report-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+              <h3>Günlük Rapor Özeti</h3>
+              <p>İş günü bazında yapılan işler, işçi sayısı ve hava durumu analizi.</p>
+            </div>
+            <div class="report-card" onclick="showToast('📊','Rapor hazırlanıyor…')">
+              <div class="report-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+              <h3>Bilgi Talebi (RFI) Raporu</h3>
+              <p>Açık/kapalı RFI sayıları, ortalama yanıt süreleri ve maliyet etkileri.</p>
+            </div>
+            <div class="report-card" onclick="showToast('📊','Rapor hazırlanıyor…')">
+              <div class="report-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+              <h3>Satış & CRM Raporu</h3>
+              <p>Pipeline analizi, dönüşüm oranları ve müşteri değişiklik istekleri.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ SETTINGS ══ -->
+        <div class="page" id="page-settings">
+          <div class="settings-grid">
+            <div class="settings-menu">
+              <div class="settings-menu-item active" onclick="setSettingsTab(this,'profile')"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</div>
+              <div class="settings-menu-item" onclick="setSettingsTab(this,'company')"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>Şirket Bilgileri</div>
+              <div class="settings-menu-item" onclick="setSettingsTab(this,'users')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Kullanıcılar</div>
+              <div class="settings-menu-item" onclick="setSettingsTab(this,'notifications')"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Bildirimler</div>
+              <div class="settings-menu-item" onclick="setSettingsTab(this,'subscription')"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Abonelik</div>
+              <div class="settings-menu-item" onclick="showToast('🚪','Çıkış yapıldı');setTimeout(()=>location.reload(),1000)"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Çıkış Yap</div>
+            </div>
+            <div class="settings-panel" id="settings-content">
+              <!-- filled by JS -->
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /page-content -->
+    </div><!-- /main-content -->
+  </div>
+</div><!-- /app -->
+
+<!-- ══ MODALS ══ -->
+<!-- Generic Add Modal -->
+<div class="modal-overlay" id="modal-add">
+  <div class="modal">
+    <div class="modal-header"><h3 id="modal-add-title">Yeni Ekle</h3><button class="modal-close" onclick="closeModal('modal-add')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body" id="modal-add-body"></div>
+  </div>
+</div>
+
+<!-- Hakediş Modal -->
+<div class="modal-overlay" id="modal-hakedis">
+  <div class="modal">
+    <div class="modal-header"><h3>Yeni Hakediş</h3><button class="modal-close" onclick="closeModal('modal-hakedis')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="fg-row"><div class="fg"><label>Proje</label><select><option>Kule Rezidans</option><option>Çarşı AVM</option><option>Villa Sitesi</option></select></div><div class="fg"><label>Dönem</label><input type="month"/></div></div>
+      <div class="fg-row"><div class="fg"><label>Tutar (₺)</label><input type="number" placeholder="0.00"/></div><div class="fg"><label>Durum</label><select><option>Hazırlanıyor</option><option>İncelemede</option><option>Onaylandı</option><option>Reddedildi</option></select></div></div>
+      <div class="fg"><label>Açıklama</label><textarea placeholder="Hakediş detayları…"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-hakedis')">İptal</button><button class="btn btn-primary" onclick="saveHakedis()">Kaydet</button></div>
+  </div>
+</div>
+
+<!-- Sözleşme Modal -->
+<div class="modal-overlay" id="modal-sozlesme">
+  <div class="modal">
+    <div class="modal-header"><h3>Yeni Sözleşme</h3><button class="modal-close" onclick="closeModal('modal-sozlesme')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="fg-row"><div class="fg"><label>Proje</label><select><option>Kule Rezidans</option><option>Çarşı AVM</option><option>Villa Sitesi</option></select></div><div class="fg"><label>Taşeron / Tedarikçi</label><input type="text" placeholder="Firma adı"/></div></div>
+      <div class="fg-row"><div class="fg"><label>Sözleşme Tutarı (₺)</label><input type="number" placeholder="0.00"/></div><div class="fg"><label>Para Birimi</label><select><option>TRY</option><option>USD</option><option>EUR</option></select></div></div>
+      <div class="fg-row"><div class="fg"><label>Başlangıç Tarihi</label><input type="date"/></div><div class="fg"><label>Bitiş Tarihi</label><input type="date"/></div></div>
+      <div class="fg"><label>Kapsam</label><textarea placeholder="Sözleşme kapsamı…"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-sozlesme')">İptal</button><button class="btn btn-primary" onclick="saveSozlesme()">Kaydet</button></div>
+  </div>
+</div>
+
+<!-- Sipariş Modal -->
+<div class="modal-overlay" id="modal-siparis">
+  <div class="modal">
+    <div class="modal-header"><h3>Yeni Sipariş</h3><button class="modal-close" onclick="closeModal('modal-siparis')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="fg-row"><div class="fg"><label>Proje</label><select><option>Kule Rezidans</option><option>Çarşı AVM</option><option>Villa Sitesi</option></select></div><div class="fg"><label>Kategori</label><select><option>Yapı Malzemesi</option><option>Elektrik</option><option>Tesisat</option><option>İş Makinesi</option><option>Diğer</option></select></div></div>
+      <div class="fg"><label>Ürün / Malzeme Adı</label><input type="text" placeholder="Örn: Portland Çimentosu CEM II"/></div>
+      <div class="fg-row"><div class="fg"><label>Miktar</label><input type="number" placeholder="0"/></div><div class="fg"><label>Birim</label><select><option>Ton</option><option>m²</option><option>m³</option><option>Adet</option><option>Kg</option><option>Lt</option></select></div></div>
+      <div class="fg-row"><div class="fg"><label>Birim Fiyat (₺)</label><input type="number" placeholder="0.00"/></div><div class="fg"><label>Tedarikçi</label><input type="text" placeholder="Firma adı"/></div></div>
+      <div class="fg-row"><div class="fg"><label>Blok / Kat</label><input type="text" placeholder="Örn: B Blok, 5. Kat"/></div><div class="fg"><label>Talep Tarihi</label><input type="date"/></div></div>
+      <div class="fg"><label>Notlar</label><textarea placeholder="Ek notlar…"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-siparis')">İptal</button><button class="btn btn-primary" onclick="saveSiparis()">Sipariş Oluştur</button></div>
+  </div>
+</div>
+
+<!-- Defect Modal -->
+<div class="modal-overlay" id="modal-defect">
+  <div class="modal">
+    <div class="modal-header"><h3>Eksiklik / Hasar Kaydı</h3><button class="modal-close" onclick="closeModal('modal-defect')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="fg-row"><div class="fg"><label>Proje</label><select><option>Kule Rezidans</option><option>Çarşı AVM</option></select></div><div class="fg"><label>Konum</label><input type="text" placeholder="Örn: A Blok, Daire 14"/></div></div>
+      <div class="fg"><label>Eksiklik / Hasar Türü</label><input type="text" placeholder="Örn: Çatlak, Su sızıntısı, Boyasız…"/></div>
+      <div class="fg-row"><div class="fg"><label>Öncelik</label><select><option>Kritik</option><option>Orta</option><option>Düşük</option></select></div><div class="fg"><label>Sorumlu</label><select><option>Mehmet Yıldız</option><option>Ali Kara</option><option>Fatma Şahin</option></select></div></div>
+      <div class="fg"><label>Açıklama</label><textarea placeholder="Detaylı açıklama…"></textarea></div>
+      <div class="fg"><label>Son Düzeltme Tarihi</label><input type="date"/></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-defect')">İptal</button><button class="btn btn-primary" onclick="saveDefect()">Kaydet</button></div>
+  </div>
+</div>
+
+<!-- RFI Modal -->
+<div class="modal-overlay" id="modal-rfi">
+  <div class="modal">
+    <div class="modal-header"><h3>Yeni Bilgi Talebi (RFI)</h3><button class="modal-close" onclick="closeModal('modal-rfi')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="fg-row"><div class="fg"><label>Proje</label><select><option>Kule Rezidans</option><option>Çarşı AVM</option><option>Villa Sitesi</option></select></div><div class="fg"><label>Alıcı</label><select><option>Proje Müdürü</option><option>Mimar</option><option>Statik Mühendis</option><option>Taşeron</option></select></div></div>
+      <div class="fg"><label>Konu</label><input type="text" placeholder="Bilgi talebinin konusu…"/></div>
+      <div class="fg"><label>Açıklama</label><textarea placeholder="Detaylı açıklama, hangi bilgiye neden ihtiyaç duyulduğu…"></textarea></div>
+      <div class="fg-row"><div class="fg"><label>Maliyet Etkisi</label><select><option>Yok</option><option>Var – Düşük</option><option>Var – Orta</option><option>Var – Yüksek</option></select></div><div class="fg"><label>Süre Etkisi</label><select><option>Yok</option><option>1-3 Gün</option><option>1 Hafta</option><option>2+ Hafta</option></select></div></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-rfi')">İptal</button><button class="btn btn-primary" onclick="saveRFI()">Gönder</button></div>
+  </div>
+</div>
+
+<!-- Task Modal -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal">
+    <div class="modal-header"><h3>Görev Ekle</h3><button class="modal-close" onclick="closeModal('modal-task')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="fg"><label>Görev Başlığı</label><input type="text" id="new-task-title" placeholder="Görev başlığını yazın…"/></div>
+      <div class="fg-row"><div class="fg"><label>Proje</label><select><option>Kule Rezidans</option><option>Çarşı AVM</option><option>Villa Sitesi</option></select></div><div class="fg"><label>Atanan Kişi</label><select><option>Ahmet Yılmaz</option><option>Mehmet Kara</option><option>Ali Demir</option><option>Fatma Şahin</option></select></div></div>
+      <div class="fg-row"><div class="fg"><label>Öncelik</label><select><option>Kritik</option><option>Yüksek</option><option>Normal</option><option>Düşük</option></select></div><div class="fg"><label>Son Tarih</label><input type="date"/></div></div>
+      <div class="fg"><label>Açıklama</label><textarea placeholder="Görev detayları…"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-task')">İptal</button><button class="btn btn-primary" onclick="saveTask()">Görev Ekle</button></div>
+  </div>
+</div>
+
+<!-- Tahsilat Modal -->
+<div class="modal-overlay" id="modal-tahsilat">
+  <div class="modal">
+    <div class="modal-header"><h3>Tahsilat Ekle</h3><button class="modal-close" onclick="closeModal('modal-tahsilat')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="fg-row"><div class="fg"><label>Proje</label><select><option>Kule Rezidans</option><option>Çarşı AVM</option><option>Villa Sitesi</option></select></div><div class="fg"><label>Tutar (₺)</label><input type="number" placeholder="0.00"/></div></div>
+      <div class="fg-row"><div class="fg"><label>Tarih</label><input type="date"/></div><div class="fg"><label>Durum</label><select><option>Tahsil Edildi</option><option>Bekliyor</option><option>Gecikmiş</option></select></div></div>
+      <div class="fg"><label>Açıklama</label><textarea placeholder="Tahsilat açıklaması…"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-tahsilat')">İptal</button><button class="btn btn-primary" onclick="saveTahsilat()">Kaydet</button></div>
+  </div>
+</div>
+
+<!-- Sales Modal -->
+<div class="modal-overlay" id="modal-sales">
+  <div class="modal">
+    <div class="modal-header"><h3>Yeni Müşteri / Fırsat</h3><button class="modal-close" onclick="closeModal('modal-sales')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="fg-row"><div class="fg"><label>Müşteri Adı</label><input type="text" placeholder="Ad Soyad / Firma"/></div><div class="fg"><label>Telefon</label><input type="tel" placeholder="+90 5xx xxx xx xx"/></div></div>
+      <div class="fg"><label>E-posta</label><input type="email" placeholder="musteri@mail.com"/></div>
+      <div class="fg-row"><div class="fg"><label>Bağımsız Bölüm</label><input type="text" placeholder="Örn: Daire A-14"/></div><div class="fg"><label>Tahmini Değer (₺)</label><input type="number" placeholder="0.00"/></div></div>
+      <div class="fg-row"><div class="fg"><label>Aşama</label><select><option>İlk Temas</option><option>Teklif Verildi</option><option>Müzakere</option><option>Kazanıldı</option><option>Kaybedildi</option></select></div><div class="fg"><label>Sorumlu</label><select><option>Ahmet Yılmaz</option><option>Fatma Şahin</option></select></div></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-sales')">İptal</button><button class="btn btn-primary" onclick="saveSales()">Kaydet</button></div>
+  </div>
+</div>
+
+<!-- İş Programı Modal -->
+<div class="modal-overlay" id="modal-isprogram">
+  <div class="modal">
+    <div class="modal-header"><h3>İş Kalemi Ekle</h3><button class="modal-close" onclick="closeModal('modal-isprogram')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="fg"><label>İş Kalemi</label><input type="text" id="new-is-item" placeholder="Örn: Kolon Dökümü – 8. Kat"/></div>
+      <div class="fg-row"><div class="fg"><label>Başlangıç</label><input type="date"/></div><div class="fg"><label>Bitiş</label><input type="date"/></div></div>
+      <div class="fg-row"><div class="fg"><label>İlerleme (%)</label><input type="number" min="0" max="100" value="0"/></div><div class="fg"><label>Sorumlu</label><select><option>Şantiye Şefi</option><option>Mühendis</option><option>Taşeron</option></select></div></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-isprogram')">İptal</button><button class="btn btn-primary" onclick="saveIsProgram()">Ekle</button></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+// ════════════════════════════════════
+// STATE
+// ════════════════════════════════════
+const APP = {
+  user: { name: 'Ahmet Yılmaz', email: 'demo@imperium.com', company: 'ABC İnşaat A.Ş.', role: 'Proje Müdürü', trialDays: 14, trialStart: new Date() },
+  currentPage: 'dashboard',
+  projects: [
+    { id:1, name:'Kule Rezidans', type:'Konut', loc:'Kadıköy, İstanbul', status:'Devam Ediyor', progress:72, budget:'₺8.4M', workers:45, tasks:12, color:'#3b82f6' },
+    { id:2, name:'Çarşı AVM', type:'Ticari', loc:'Bağcılar, İstanbul', status:'Devam Ediyor', progress:45, budget:'₺14.2M', workers:88, tasks:24, color:'#f97316' },
+    { id:3, name:'Villa Sitesi A Blok', type:'Konut', loc:'Belek, Antalya', status:'Tamamlandı', progress:88, budget:'₺5.1M', workers:22, tasks:5, color:'#22c55e' },
+    { id:4, name:'Hastane Ek Bina', type:'Sağlık', loc:'Çankaya, Ankara', status:'Devam Ediyor', progress:31, budget:'₺11.8M', workers:67, tasks:19, color:'#8b5cf6' },
+    { id:5, name:'Sanayi Yapısı', type:'Endüstriyel', loc:'Gebze, Kocaeli', status:'Devam Ediyor', progress:60, budget:'₺6.7M', workers:38, tasks:8, color:'#ef4444' },
+    { id:6, name:'Liman Depo Tesisi', type:'Altyapı', loc:'Mersin Limanı', status:'Beklemede', progress:10, budget:'₺9.3M', workers:0, tasks:3, color:'#f59e0b' },
+  ],
+  hakedisler: [
+    { no:'HKD-001', proje:'Kule Rezidans', donem:'Mart 2025', tutar:'₺420.000', durum:'Onaylandı', tarih:'2025-03-15' },
+    { no:'HKD-002', proje:'Çarşı AVM', donem:'Mart 2025', tutar:'₺890.000', durum:'İncelemede', tarih:'2025-03-20' },
+    { no:'HKD-003', proje:'Villa Sitesi', donem:'Şubat 2025', tutar:'₺310.000', durum:'Onaylandı', tarih:'2025-02-28' },
+    { no:'HKD-004', proje:'Hastane Ek Bina', donem:'Mart 2025', tutar:'₺650.000', durum:'Hazırlanıyor', tarih:'2025-03-25' },
+  ],
+  sozlesmeler: [
+    { proje:'Kule Rezidans', taseron:'Akar İnşaat Ltd.', tutar:'₺2.1M', baslangic:'2024-06-01', bitis:'2025-12-31', durum:'Aktif' },
+    { proje:'Çarşı AVM', taseron:'Mega Yapı A.Ş.', tutar:'₺5.4M', baslangic:'2024-09-01', bitis:'2026-06-30', durum:'Aktif' },
+    { proje:'Villa Sitesi', taseron:'Güneş İnşaat', tutar:'₺1.8M', baslangic:'2024-03-01', bitis:'2025-01-31', durum:'Tamamlandı' },
+    { proje:'Hastane Ek Bina', taseron:'Sağlam Yapı', tutar:'₺3.9M', baslangic:'2025-01-15', bitis:'2026-07-15', durum:'Aktif' },
+  ],
+  siparisler: {
+    talep: [
+      { id:'SP-041', ad:'Demir Çubuk Ø20', proje:'Hastane', miktar:'12 Ton', tutar:'₺84.000' },
+      { id:'SP-042', ad:'Çimento CEM II', proje:'Kule Rez.', miktar:'200 Ton', tutar:'₺110.000' },
+    ],
+    siparis: [
+      { id:'SP-038', ad:'Tuğla (Normal Delik)', proje:'Çarşı AVM', miktar:'15.000 Adet', tutar:'₺67.500' },
+      { id:'SP-039', ad:'Su Yalıtım Membranı', proje:'Kule Rez.', miktar:'800 m²', tutar:'₺48.000' },
+      { id:'SP-040', ad:'Alçı Levha 12mm', proje:'Villa S.', miktar:'2.400 Adet', tutar:'₺36.000' },
+    ],
+    teslim: [
+      { id:'SP-035', ad:'Portland Çimentosu', proje:'Kule Rez.', miktar:'50 Ton', tutar:'₺27.500' },
+      { id:'SP-036', ad:'Şap Malzemesi', proje:'Villa S.', miktar:'120 m²', tutar:'₺9.600' },
+    ],
+    teslimEdildi: [
+      { id:'SP-030', ad:'Demir Hasır', proje:'Hastane', miktar:'3 Ton', tutar:'₺21.000' },
+      { id:'SP-031', ad:'Pvc Boru Dn110', proje:'AVM', miktar:'500 mt', tutar:'₺18.500' },
+    ],
+  },
+  defects: [
+    { id:'EKS-001', baslik:'Çatı Su Sızıntısı', yer:'Çarşı AVM – Çatı Katı', oncelik:'Kritik', durum:'Açık', sorumlu:'Mehmet Yıldız', tarih:'2025-03-18' },
+    { id:'EKS-002', baslik:'Sıva Çatlağı', yer:'Kule Rez. – A Blok D:14', oncelik:'Orta', durum:'İşlemde', sorumlu:'Ali Kara', tarih:'2025-03-20' },
+    { id:'EKS-003', baslik:'Kapı Kilidi Arıza', yer:'Villa Sitesi – D:7', oncelik:'Düşük', durum:'Kapalı', sorumlu:'Fatma Şahin', tarih:'2025-03-15' },
+    { id:'EKS-004', baslik:'Zemin Döşeme Boşluğu', yer:'Hastane – Zemin Kat', oncelik:'Orta', durum:'Açık', sorumlu:'Mehmet Yıldız', tarih:'2025-03-22' },
+    { id:'EKS-005', baslik:'Elektrik Panosu Hatalı', yer:'Kule Rez. – B Blok', oncelik:'Kritik', durum:'İşlemde', sorumlu:'Ali Kara', tarih:'2025-03-25' },
+  ],
+  rfis: [
+    { no:'RFI-001', konu:'Temel Derinliği Değişikliği', proje:'Kule Rezidans', gonderen:'Şantiye Şefi', alici:'Statik Mühendis', maliyet:'Var – Yüksek', sure:'2+ Hafta', durum:'Açık', tarih:'2025-03-10' },
+    { no:'RFI-002', konu:'Çatı Eğimi Onayı', proje:'Çarşı AVM', gonderen:'Mühendis', alici:'Mimar', maliyet:'Yok', sure:'1-3 Gün', durum:'Yanıtlandı', tarih:'2025-03-14' },
+    { no:'RFI-003', konu:'Kuru Hacim Malzeme Spesi', proje:'Hastane Ek Bina', gonderen:'Şantiye Şefi', alici:'Proje Müdürü', maliyet:'Var – Düşük', sure:'1 Hafta', durum:'Açık', tarih:'2025-03-21' },
+  ],
+  tasks: [
+    { id:1, baslik:'Zemin etüdü raporunu incele', proje:'Kule Rezidans', atanan:'Ahmet Yılmaz', oncelik:'Kritik', tarih:'2025-03-27', done:false },
+    { id:2, baslik:'Beton sipariş onayı', proje:'Çarşı AVM', atanan:'Mehmet Kara', oncelik:'Yüksek', tarih:'2025-03-27', done:true },
+    { id:3, baslik:'Yangın denetim formunu doldur', proje:'Hastane Ek Bina', atanan:'Ali Demir', oncelik:'Yüksek', tarih:'2025-03-28', done:false },
+    { id:4, baslik:'Mart ayı hakediş hazırla', proje:'Sanayi Yapısı', atanan:'Fatma Şahin', oncelik:'Normal', tarih:'2025-03-30', done:false },
+    { id:5, baslik:'Subkontraktor sözleşmesi revizyonu', proje:'Çarşı AVM', atanan:'Ahmet Yılmaz', oncelik:'Normal', tarih:'2025-04-01', done:false },
+    { id:6, baslik:'İskele güvenlik denetimi', proje:'Kule Rezidans', atanan:'Mehmet Kara', oncelik:'Kritik', tarih:'2025-04-02', done:false },
+  ],
+  dailyReports: [
+    { tarih:'2025-03-26', proje:'Kule Rezidans', isci:45, makine:8, hava:'☀️', durum:'Yayınlandı' },
+    { tarih:'2025-03-25', proje:'Çarşı AVM', isci:88, makine:14, hava:'⛅', durum:'Yayınlandı' },
+    { tarih:'2025-03-24', proje:'Villa Sitesi', isci:22, makine:4, hava:'☀️', durum:'Yayınlandı' },
+    { tarih:'2025-03-23', proje:'Hastane Ek Bina', isci:67, makine:11, hava:'🌧️', durum:'Yayınlandı' },
+  ],
+  finance: [
+    { proje:'Kule Rezidans', tutar:'₺420.000', tarih:'2025-03-15', durum:'Tahsil Edildi' },
+    { proje:'Çarşı AVM', tutar:'₺1.200.000', tarih:'2025-03-18', durum:'Tahsil Edildi' },
+    { proje:'Hastane Ek Bina', tutar:'₺650.000', tarih:'2025-03-25', durum:'Bekliyor' },
+    { proje:'Villa Sitesi', tutar:'₺310.000', tarih:'2025-03-28', durum:'Bekliyor' },
+    { proje:'Sanayi Yapısı', tutar:'₺280.000', tarih:'2025-03-10', durum:'Gecikmiş' },
+  ],
+  salesPipeline: {
+    'İlk Temas': [
+      { musteri:'Kadir Arslan', bolum:'Daire A-14', deger:'₺1.8M', sure:'2 gün' },
+      { musteri:'Selin Kaya', bolum:'Daire B-08', deger:'₺2.1M', sure:'5 gün' },
+      { musteri:'Emre & Tuğba', bolum:'Villa No:7', deger:'₺3.4M', sure:'1 gün' },
+    ],
+    'Teklif Verildi': [
+      { musteri:'Ahmet Demir', bolum:'Daire C-22', deger:'₺1.6M', sure:'12 gün' },
+      { musteri:'Zeynep Holding', bolum:'Ofis Katı', deger:'₺5.2M', sure:'8 gün' },
+    ],
+    'Müzakere': [
+      { musteri:'Bekir Yıldız', bolum:'Daire D-05', deger:'₺2.4M', sure:'20 gün' },
+    ],
+    'Kazanıldı': [
+      { musteri:'Fatma Çelik', bolum:'Daire A-01', deger:'₺1.9M', sure:'35 gün' },
+      { musteri:'Oğuz Ltd.', bolum:'Depo Alanı', deger:'₺4.1M', sure:'28 gün' },
+    ],
+  },
+  schedule: [
+    { is:'Temel Kazısı', pct:100, baslangic:'Oca 2025', bitis:'Şub 2025', sorumlu:'Şantiye Şefi' },
+    { is:'Temel Betonu', pct:100, baslangic:'Şub 2025', bitis:'Mar 2025', sorumlu:'Taşeron' },
+    { is:'Bodrum Kat Kolonlar', pct:100, baslangic:'Mar 2025', bitis:'Mar 2025', sorumlu:'Taşeron' },
+    { is:'Zemin Kat Döşemesi', pct:80, baslangic:'Mar 2025', bitis:'Nis 2025', sorumlu:'Şantiye Şefi' },
+    { is:'1-5. Kat Kolon & Kiriş', pct:55, baslangic:'Nis 2025', bitis:'Haz 2025', sorumlu:'Taşeron' },
+    { is:'6-10. Kat Kaba İnşaat', pct:20, baslangic:'Haz 2025', bitis:'Eyl 2025', sorumlu:'Taşeron' },
+    { is:'Çatı Yapımı', pct:0, baslangic:'Eyl 2025', bitis:'Eki 2025', sorumlu:'Çatı Ustası' },
+    { is:'İç Mekan İnce İşler', pct:0, baslangic:'Eki 2025', bitis:'Oca 2026', sorumlu:'Dekorasyon Ekibi' },
+    { is:'Dış Cephe & Çevre Düzeni', pct:0, baslangic:'Kas 2025', bitis:'Şub 2026', sorumlu:'Mimar' },
+  ],
+};
+
+// ════════════════════════════════════
+// AUTH
+// ════════════════════════════════════
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',i===(tab==='login'?0:1)));
+  document.getElementById('auth-panel-login').style.display = tab==='login'?'block':'none';
+  document.getElementById('auth-panel-register').style.display = tab==='register'?'block':'none';
+}
+function doLogin() {
+  const e=document.getElementById('login-email').value;
+  const p=document.getElementById('login-pass').value;
+  if(!e||!p){ showToast('⚠️','E-posta ve şifre gerekli'); return; }
+  launchApp();
+}
+function doRegister() {
+  const first=document.getElementById('reg-first').value;
+  const last=document.getElementById('reg-last').value;
+  const email=document.getElementById('reg-email').value;
+  const company=document.getElementById('reg-company').value;
+  if(!first||!email||!company){ showToast('⚠️','Lütfen tüm zorunlu alanları doldurun'); return; }
+  APP.user.name=`${first} ${last}`;
+  APP.user.email=email;
+  APP.user.company=company;
+  launchApp();
+}
+function launchApp() {
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  initApp();
+  showToast('🎉',`Hoş geldin! 14 günlük denemeniz başladı`);
+}
+
+// ════════════════════════════════════
+// INIT
+// ════════════════════════════════════
+function initApp() {
+  // User info
+  const initials=APP.user.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('sb-avatar').textContent=initials;
+  document.getElementById('sb-name').textContent=APP.user.name;
+  document.getElementById('welcome-name').textContent=APP.user.name.split(' ')[0];
+  const now=new Date();
+  document.getElementById('today-date').textContent=now.toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('report-date').textContent=now.toLocaleDateString('tr-TR');
+
+  // Trial
+  const daysUsed=0; const total=14;
+  const left=total-daysUsed;
+  document.getElementById('trial-days-left').textContent=`${left} gün kaldı`;
+  document.getElementById('trial-bar').style.width=`${(left/total)*100}%`;
+
+  // Build chart
+  buildChart('dash-chart',[62,78,55,90,71,85,68,92,80,74,88,95]);
+  buildChart('finance-chart',[420,890,310,650,280,810,540,720,460,600,880,1200],true);
+
+  // Render modules
+  renderProjects();
+  renderHakedis();
+  renderSozlesme();
+  renderKanban();
+  renderDefects();
+  renderSchedule();
+  renderRFI();
+  renderTasks();
+  renderDailyReports();
+  renderFinance();
+  renderSales();
+  renderInspection();
+  renderSettings('profile');
+}
+
+// ════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════
+const pageTitles={dashboard:'Dashboard',projects:'Projeler',technical:'Teknik Ofis',purchase:'Satın Alma',schedule:'İş Programı',defects:'Hasar-Eksiklik Listesi',inspection:'Denetlemeler',dailyreport:'Günlük Rapor',rfi:'Bilgi Talepleri',tasks:'Görevlendirme',finance:'Finans',sales:'Satış',reports:'Raporlama',settings:'Ayarlar'};
+function goPage(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('page-title').textContent=pageTitles[id]||id;
+  APP.currentPage=id;
+}
+
+// ════════════════════════════════════
+// CHART
+// ════════════════════════════════════
+const months=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+function buildChart(id, data, green=false) {
+  const el=document.getElementById(id); if(!el) return;
+  const max=Math.max(...data);
+  el.innerHTML=data.map((v,i)=>`
+    <div class="chart-bar" style="height:${Math.round((v/max)*100)}%;background:${green?'var(--green)':'var(--orange)'};opacity:.7;position:relative;" title="${months[i]}: ${v}">
+      <span class="chart-bar-label">${months[i]}</span>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════
+// RENDER FUNCTIONS
+// ════════════════════════════════════
+function statusDot(s){
+  const map={'Devam Ediyor':'s-blue','Tamamlandı':'s-green','Beklemede':'s-gray','Onaylandı':'s-green','İncelemede':'s-orange','Hazırlanıyor':'s-yellow','Reddedildi':'s-red','Aktif':'s-green','Açık':'s-orange','İşlemde':'s-blue','Kapalı':'s-gray','Yanıtlandı':'s-green','Tahsil Edildi':'s-green','Bekliyor':'s-orange','Gecikmiş':'s-red','Yayınlandı':'s-green','Taslak':'s-gray'};
+  return `<span class="status ${map[s]||'s-gray'}">${s}</span>`;
+}
+
+function renderProjects() {
+  const g=document.getElementById('projects-grid');
+  g.innerHTML=APP.projects.map(p=>`
+    <div class="proj-card" onclick="showToast('🏗️','${p.name} açıldı')">
+      <div class="proj-card-top">
+        <div><div class="proj-type">${p.type}</div><div class="proj-name">${p.name}</div><div class="proj-loc"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${p.loc}</div></div>
+        ${statusDot(p.status)}
+      </div>
+      <div class="progress"><div class="progress-bar" style="width:${p.progress}%;background:${p.color}"></div></div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:4px;">İlerleme: %${p.progress}</div>
+      <div class="proj-stats">
+        <div class="proj-stat"><div class="proj-stat-val">${p.budget}</div><div class="proj-stat-lbl">Bütçe</div></div>
+        <div class="proj-stat"><div class="proj-stat-val">${p.workers}</div><div class="proj-stat-lbl">İşçi</div></div>
+        <div class="proj-stat"><div class="proj-stat-val">${p.tasks}</div><div class="proj-stat-lbl">Görev</div></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderHakedis() {
+  document.getElementById('hakedis-tbody').innerHTML=APP.hakedisler.map(h=>`
+    <tr><td class="td-bold">${h.no}</td><td>${h.proje}</td><td>${h.donem}</td><td class="td-bold">${h.tutar}</td><td>${statusDot(h.durum)}</td><td class="td-muted">${h.tarih}</td>
+    <td><button class="btn btn-ghost btn-sm" onclick="showToast('👁️','${h.no} görüntüleniyor')">Görüntüle</button></td></tr>`).join('');
+}
+
+function renderSozlesme() {
+  document.getElementById('sozlesme-tbody').innerHTML=APP.sozlesmeler.map(s=>`
+    <tr><td class="td-bold">${s.proje}</td><td>${s.taseron}</td><td class="td-bold">${s.tutar}</td><td class="td-muted">${s.baslangic}</td><td class="td-muted">${s.bitis}</td><td>${statusDot(s.durum)}</td></tr>`).join('');
+}
+
+function renderKanban() {
+  const cols={talep:'📋 Talep Bekliyor',siparis:'🔄 Siparişte',teslim:'🚚 Teslim Bekliyor',teslimEdildi:'✅ Teslim Edildi'};
+  document.getElementById('kanban-board').innerHTML=Object.entries(cols).map(([k,title])=>`
+    <div class="kanban-col">
+      <div class="kanban-col-header"><span class="kanban-col-title">${title}</span><span class="kanban-count">${APP.siparisler[k].length}</span></div>
+      ${APP.siparisler[k].map(s=>`
+        <div class="kanban-card" onclick="showToast('📦','${s.ad}')">
+          <h4>${s.ad}</h4>
+          <p>${s.proje} · ${s.miktar}</p>
+          <div class="kanban-card-footer"><span class="td-bold" style="font-size:.78rem;">${s.tutar}</span><span class="td-muted">${s.id}</span></div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+function renderDefects() {
+  const pmap={'Kritik':'p-high','Orta':'p-med','Düşük':'p-low'};
+  document.getElementById('defect-grid').innerHTML=APP.defects.map(d=>`
+    <div class="defect-card" onclick="showToast('🔍','${d.baslik} detayı açıldı')">
+      <div class="defect-img">
+        <svg class="defect-img-ph" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span class="defect-priority ${pmap[d.oncelik]}">${d.oncelik}</span>
+      </div>
+      <div class="defect-body">
+        <h4>${d.baslik}</h4>
+        <p>${d.yer}</p>
+        <div class="defect-meta">${statusDot(d.durum)}<span class="td-muted">${d.sorumlu}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderSchedule() {
+  document.getElementById('schedule-body').innerHTML=`
+    <div style="overflow-x:auto;">
+      <table><thead><tr><th>İş Kalemi</th><th>Başlangıç</th><th>Bitiş</th><th style="width:200px;">İlerleme</th><th>Sorumlu</th><th>Durum</th></tr></thead>
+      <tbody>${APP.schedule.map(s=>`
+        <tr>
+          <td class="td-bold">${s.is}</td>
+          <td class="td-muted">${s.baslangic}</td>
+          <td class="td-muted">${s.bitis}</td>
+          <td><div class="progress"><div class="progress-bar" style="width:${s.pct}%"></div></div><span style="font-size:.7rem;color:var(--muted)">%${s.pct}</span></td>
+          <td class="td-muted">${s.sorumlu}</td>
+          <td>${s.pct===100?'<span class="status s-green">Tamamlandı</span>':s.pct>0?'<span class="status s-blue">Devam Ediyor</span>':'<span class="status s-gray">Başlamadı</span>'}</td>
+        </tr>`).join('')}</tbody></table></div>`;
+}
+
+function renderRFI() {
+  document.getElementById('rfi-tbody').innerHTML=APP.rfis.map(r=>`
+    <tr><td class="td-bold">${r.no}</td><td>${r.konu}</td><td>${r.proje}</td><td class="td-muted">${r.gonderen}</td><td class="td-muted">${r.alici}</td>
+    <td><span class="badge-${r.maliyet==='Yok'?'gray':'red'}" style="padding:2px 8px;border-radius:99px;font-size:.72rem;font-weight:600;background:${r.maliyet==='Yok'?'var(--bg)':'rgba(239,68,68,.1)'};color:${r.maliyet==='Yok'?'var(--muted)':'var(--red)'}">${r.maliyet}</span></td>
+    <td class="td-muted">${r.sure}</td><td>${statusDot(r.durum)}</td><td class="td-muted">${r.tarih}</td></tr>`).join('');
+}
+
+function renderTasks() {
+  const pclr={Kritik:'var(--red)',Yüksek:'var(--orange)',Normal:'var(--blue)',Düşük:'var(--muted)'};
+  document.getElementById('task-list').innerHTML=APP.tasks.map(t=>`
+    <div class="task-item">
+      <div class="task-check ${t.done?'done':''}" onclick="toggleTask(${t.id})">
+        ${t.done?'<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':''}
+      </div>
+      <div class="task-info">
+        <div class="task-title ${t.done?'done':''}">${t.baslik}</div>
+        <div class="task-meta">${t.proje} · ${t.atanan} · Son: ${t.tarih}</div>
+      </div>
+      <div class="task-right">
+        <span style="font-size:.72rem;font-weight:700;color:${pclr[t.oncelik]};padding:2px 8px;border-radius:99px;background:${pclr[t.oncelik]}18">${t.oncelik}</span>
+      </div>
+    </div>`).join('');
+}
+
+function toggleTask(id) {
+  const t=APP.tasks.find(x=>x.id===id);
+  if(t){ t.done=!t.done; renderTasks(); showToast(t.done?'✅':'↩️', t.done?'Görev tamamlandı':'Görev geri alındı'); }
+}
+
+function renderDailyReports() {
+  document.getElementById('daily-tbody').innerHTML=APP.dailyReports.map(r=>`
+    <tr><td class="td-bold">${r.tarih}</td><td>${r.proje}</td><td>${r.isci} kişi</td><td>${r.makine} makine</td><td>${r.hava}</td><td>${statusDot(r.durum)}</td>
+    <td><button class="btn btn-ghost btn-sm" onclick="showToast('📋','Rapor görüntüleniyor')">Görüntüle</button></td></tr>`).join('');
+}
+
+function renderFinance() {
+  document.getElementById('finance-tbody').innerHTML=APP.finance.map(f=>`
+    <tr><td class="td-bold">${f.proje}</td><td class="td-bold">${f.tutar}</td><td class="td-muted">${f.tarih}</td><td>${statusDot(f.durum)}</td></tr>`).join('');
+  document.getElementById('finance-breakdown').innerHTML=`
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem;"><span>Kule Rezidans</span><strong style="color:var(--green)">₺420.000 ✓</strong></div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem;"><span>Çarşı AVM</span><strong style="color:var(--green)">₺1.200.000 ✓</strong></div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem;"><span>Hastane Ek Bina</span><strong style="color:var(--orange)">₺650.000 ⏳</strong></div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:.85rem;"><span>Sanayi Yapısı</span><strong style="color:var(--red)">₺280.000 ⚠️</strong></div>`;
+}
+
+function renderSales() {
+  document.getElementById('sales-pipeline').innerHTML=Object.entries(APP.salesPipeline).map(([stage, cards])=>`
+    <div class="pipeline-col">
+      <div class="pipeline-header">
+        <div class="pipeline-title">${stage}</div>
+        <div class="pipeline-amount">${cards.length} fırsat</div>
+      </div>
+      ${cards.map(c=>`
+        <div class="pipeline-card" onclick="showToast('👤','${c.musteri}')">
+          <h4>${c.musteri}</h4>
+          <p>${c.bolum}</p>
+          <div class="pipeline-card-foot"><strong style="font-size:.82rem;">${c.deger}</strong><span class="td-muted" style="font-size:.72rem;">${c.sure}</span></div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+function renderInspection() {
+  const items1=['Yangın tüplerinin doluluk kontrolü','Acil çıkış yolları işaretleme','Yangın kapısı çalışma testi','Duman dedektörleri test','Sprinkler sistemi kontrolü'];
+  const items2=['Beton kalite kontrol (C25/C30)','Donatı yerleşimi kontrolü','Kalıp ve iskele güvenliği','Dış yüzey izolasyon kalitesi','Çatı su yalıtım testi'];
+  const done1=[false,true,false,true,false];
+  const done2=[true,true,true,true,true];
+  document.getElementById('inspection-body').innerHTML=items1.map((item,i)=>`
+    <div class="checklist-item" onclick="toggleCheck(this)">
+      <div class="check-box ${done1[i]?'checked':''}"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <span class="checklist-label ${done1[i]?'checked':''}">${item}</span>
+    </div>`).join('');
+  document.getElementById('inspection-body2').innerHTML=items2.map((item,i)=>`
+    <div class="checklist-item" onclick="toggleCheck(this)">
+      <div class="check-box ${done2[i]?'checked':''}"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <span class="checklist-label ${done2[i]?'checked':''}">${item}</span>
+    </div>`).join('');
+}
+
+function toggleCheck(el) {
+  const box=el.querySelector('.check-box');
+  const label=el.querySelector('.checklist-label');
+  const on=!box.classList.contains('checked');
+  box.classList.toggle('checked',on);
+  box.innerHTML=on?'<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':'';
+  label.classList.toggle('checked',on);
+  showToast(on?'✅':'↩️',on?'Kontrol tamamlandı':'Geri alındı');
+}
+
+// ════════════════════════════════════
+// SETTINGS
+// ════════════════════════════════════
+function setSettingsTab(el, tab) {
+  document.querySelectorAll('.settings-menu-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  renderSettings(tab);
+}
+function renderSettings(tab) {
+  const panels = {
+    profile:`<h3>Profil Bilgileri</h3><p>Kişisel bilgilerinizi güncelleyin.</p>
+      <div class="settings-section"><h4>Kişisel Bilgiler</h4>
+        <div class="fg-row"><div class="fg"><label>Ad</label><input value="${APP.user.name.split(' ')[0]}"/></div><div class="fg"><label>Soyad</label><input value="${APP.user.name.split(' ')[1]||''}"/></div></div>
+        <div class="fg"><label>E-posta</label><input value="${APP.user.email}"/></div>
+        <div class="fg"><label>Telefon</label><input value="+90 532 123 45 67"/></div>
+        <div class="fg"><label>Rol</label><input value="${APP.user.role}" readonly style="background:var(--bg);"/></div>
+        <button class="btn btn-primary" onclick="showToast('✅','Profil güncellendi')">Kaydet</button>
+      </div>`,
+    company:`<h3>Şirket Bilgileri</h3><p>Firmanıza ait genel bilgiler.</p>
+      <div class="settings-section"><h4>Firma Detayları</h4>
+        <div class="fg"><label>Şirket Adı</label><input value="${APP.user.company}"/></div>
+        <div class="fg-row"><div class="fg"><label>Vergi No</label><input value="1234567890"/></div><div class="fg"><label>Vergi Dairesi</label><input value="Kadıköy V.D."/></div></div>
+        <div class="fg"><label>Adres</label><textarea>İstanbul, Türkiye</textarea></div>
+        <button class="btn btn-primary" onclick="showToast('✅','Şirket bilgileri güncellendi')">Kaydet</button>
+      </div>`,
+    users:`<h3>Kullanıcı Yönetimi</h3><p>Ekip üyelerinizi yönetin ve davet edin.</p>
+      <div class="settings-section"><h4>Aktif Kullanıcılar</h4>
+        <table><thead><tr><th>İsim</th><th>Rol</th><th>E-posta</th><th>Durum</th></tr></thead><tbody>
+          <tr><td class="td-bold">Ahmet Yılmaz</td><td>Proje Müdürü</td><td>ahmet@abc.com</td><td><span class="status s-green">Aktif</span></td></tr>
+          <tr><td class="td-bold">Mehmet Kara</td><td>Şantiye Şefi</td><td>mehmet@abc.com</td><td><span class="status s-green">Aktif</span></td></tr>
+          <tr><td class="td-bold">Ali Demir</td><td>Mühendis</td><td>ali@abc.com</td><td><span class="status s-green">Aktif</span></td></tr>
+          <tr><td class="td-bold">Fatma Şahin</td><td>Ofis Kullanıcısı</td><td>fatma@abc.com</td><td><span class="status s-orange">Davet Bekliyor</span></td></tr>
+        </tbody></table>
+        <button class="btn btn-primary" style="margin-top:16px;" onclick="showToast('📧','Davet gönderildi')">+ Kullanıcı Davet Et</button>
+      </div>`,
+    notifications:`<h3>Bildirim Ayarları</h3><p>Hangi bildirimleri almak istediğinizi seçin.</p>
+      <div class="settings-section"><h4>E-posta Bildirimleri</h4>
+        ${['Yeni görev atandı','Hakediş onayı isteniyor','Sipariş durum değişikliği','Yeni eksiklik kaydı','Günlük rapor hatırlatıcı'].map(n=>`
+          <div class="toggle-row"><div class="toggle-row-info"><h5>${n}</h5></div>
+          <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>`).join('')}
+      </div>`,
+    subscription:`<h3>Abonelik Bilgileri</h3><p>Mevcut planınız ve fatura detayları.</p>
+      <div class="settings-section"><h4>Mevcut Plan</h4>
+        <div style="background:var(--orange-l);border:1.5px solid rgba(249,115,22,.3);border-radius:12px;padding:20px;margin-bottom:16px;">
+          <div style="font-size:1.2rem;font-weight:800;color:var(--text);">⚡ 14 Günlük Ücretsiz Deneme</div>
+          <div style="font-size:.85rem;color:var(--muted);margin-top:4px;">Profesyonel Plan · 50 Kullanıcı · Sınırsız Proje</div>
+          <div style="margin-top:12px;font-size:.82rem;color:var(--orange-d);font-weight:600;">Deneme bitiş tarihi: ${new Date(Date.now()+14*24*3600*1000).toLocaleDateString('tr-TR')}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:8px 0;border-bottom:1px solid var(--border);"><span>Plan</span><strong>Profesyonel</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:8px 0;border-bottom:1px solid var(--border);"><span>Ücret (Aylık)</span><strong>$275 / ay</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:8px 0;"><span>Kullanıcı Limiti</span><strong>50 Kullanıcı</strong></div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px;" onclick="showToast('💳','Ödeme sayfasına yönlendiriliyor')">Ödeme Yöntemi Ekle</button>
+      </div>`
+  };
+  document.getElementById('settings-content').innerHTML=panels[tab]||panels.profile;
+}
+
+// ════════════════════════════════════
+// SAVE FUNCTIONS
+// ════════════════════════════════════
+function saveHakedis() {
+  APP.hakedisler.unshift({ no:`HKD-00${APP.hakedisler.length+1}`, proje:'Yeni Proje', donem:'Nisan 2025', tutar:'₺0', durum:'Hazırlanıyor', tarih:new Date().toISOString().slice(0,10) });
+  renderHakedis(); closeModal('modal-hakedis'); showToast('✅','Hakediş kaydedildi');
+}
+function saveSozlesme() {
+  APP.sozlesmeler.unshift({ proje:'Yeni Proje', taseron:'Yeni Taşeron', tutar:'₺0', baslangic:'2025-04-01', bitis:'2026-04-01', durum:'Aktif' });
+  renderSozlesme(); closeModal('modal-sozlesme'); showToast('✅','Sözleşme kaydedildi');
+}
+function saveSiparis() {
+  APP.siparisler.talep.unshift({ id:`SP-0${50+Math.floor(Math.random()*10)}`, ad:'Yeni Malzeme', proje:'Seçili Proje', miktar:'0 Adet', tutar:'₺0' });
+  renderKanban(); closeModal('modal-siparis'); showToast('✅','Sipariş oluşturuldu');
+}
+function saveDefect() {
+  APP.defects.unshift({ id:`EKS-00${APP.defects.length+1}`, baslik:'Yeni Eksiklik', yer:'Seçili Konum', oncelik:'Orta', durum:'Açık', sorumlu:'Atanacak', tarih:new Date().toISOString().slice(0,10) });
+  renderDefects(); closeModal('modal-defect'); showToast('✅','Eksiklik kaydedildi');
+}
+function saveRFI() {
+  APP.rfis.unshift({ no:`RFI-00${APP.rfis.length+1}`, konu:'Yeni Bilgi Talebi', proje:'Seçili', gonderen:'Kullanıcı', alici:'Alıcı', maliyet:'Yok', sure:'Belirsiz', durum:'Açık', tarih:new Date().toISOString().slice(0,10) });
+  renderRFI(); closeModal('modal-rfi'); showToast('✅','RFI gönderildi');
+}
+function saveTask() {
+  const title=document.getElementById('new-task-title').value;
+  if(!title){ showToast('⚠️','Görev başlığı gerekli'); return; }
+  APP.tasks.unshift({ id:Date.now(), baslik:title, proje:'Seçili Proje', atanan:'Ahmet Yılmaz', oncelik:'Normal', tarih:'2025-04-01', done:false });
+  renderTasks(); closeModal('modal-task'); showToast('✅','Görev eklendi');
+}
+function saveTahsilat() {
+  APP.finance.unshift({ proje:'Seçili Proje', tutar:'₺0', tarih:new Date().toISOString().slice(0,10), durum:'Bekliyor' });
+  renderFinance(); closeModal('modal-tahsilat'); showToast('✅','Tahsilat eklendi');
+}
+function saveSales() {
+  APP.salesPipeline['İlk Temas'].unshift({ musteri:'Yeni Müşteri', bolum:'–', deger:'₺0', sure:'Bugün' });
+  renderSales(); closeModal('modal-sales'); showToast('✅','Müşteri eklendi');
+}
+function saveIsProgram() {
+  const item=document.getElementById('new-is-item').value;
+  if(!item){ showToast('⚠️','İş kalemi adı gerekli'); return; }
+  APP.schedule.unshift({ is:item, pct:0, baslangic:'Nis 2025', bitis:'May 2025', sorumlu:'Atanacak' });
+  renderSchedule(); closeModal('modal-isprogram'); showToast('✅','İş kalemi eklendi');
+}
+
+// ════════════════════════════════════
+// MODAL & TOAST
+// ════════════════════════════════════
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
+
+let toastTimer;
+function showToast(icon, msg) {
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.querySelector('svg').style.display='none';
+  t.innerHTML=`<span style="font-size:1rem;">${icon}</span><span>${msg}</span>`;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ════════════════════════════════════
+// TASK CHECK CLICK on dashboard
+// ════════════════════════════════════
+document.querySelectorAll('.task-check:not([onclick])').forEach(el=>{
+  el.addEventListener('click',function(){
+    this.classList.toggle('done');
+    if(this.classList.contains('done')) this.innerHTML='<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+    else this.innerHTML='';
+    showToast('✅','Görev güncellendi');
+  });
+});
+</script>
+</body>
+</html>

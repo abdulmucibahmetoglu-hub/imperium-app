@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Search, MapPin, Calendar, Users, MoreVertical, Eye } from 'lucide-react';
+import { Plus, Search, MapPin, Calendar, Users, MoreVertical, Eye, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 
 const projects = [
   { id: 1, name: 'Metropol Bursa', type: 'Konut', location: 'Bursa/Türkiye', startDate: '01.01.2021', endDate: '17.01.2023', units: 120, progress: 85, status: 'Devam Ediyor', color: 'bg-blue-500' },
@@ -25,9 +26,31 @@ export default function ProjeYonetimi() {
           <h1 className="text-2xl font-bold text-gray-900">Proje Yönetimi</h1>
           <p className="text-gray-500 text-sm">Tüm projelerinizi tek panelden yönetin</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-          <Plus className="w-4 h-4" /> Yeni Proje
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToPdf({
+              title: 'Proje Yonetimi',
+              subtitle: 'Tum projeler listesi',
+              columns: [
+                { header: 'Proje Adi', dataKey: 'name' },
+                { header: 'Tur', dataKey: 'type' },
+                { header: 'Konum', dataKey: 'location' },
+                { header: 'Baslangic', dataKey: 'startDate' },
+                { header: 'Bitis', dataKey: 'endDate' },
+                { header: 'Ilerleme', dataKey: 'progress' },
+                { header: 'Durum', dataKey: 'status' },
+              ],
+              data: projects.map((p) => ({ name: p.name, type: p.type, location: p.location, startDate: p.startDate, endDate: p.endDate, progress: `${p.progress}%`, status: p.status })),
+              filename: 'Proje_Yonetimi.pdf',
+            })}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            <Plus className="w-4 h-4" /> Yeni Proje
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">

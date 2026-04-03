@@ -1,4 +1,5 @@
-import { BarChart3, Download, Filter, FileText, PieChart as PieChartIcon, TrendingUp } from 'lucide-react';
+import { BarChart3, Download, Filter, FileText, PieChart as PieChartIcon, TrendingUp, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const projectData = [
@@ -35,7 +36,22 @@ export default function Raporlama() {
         </div>
         <div className="flex gap-2">
           <button className="flex items-center gap-2 px-4 py-2 border rounded-lg text-sm text-gray-600 hover:bg-gray-50"><Filter className="w-4 h-4" /> Filtrele</button>
-          <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"><Download className="w-4 h-4" /> Rapor İndir</button>
+          <button
+            onClick={() => exportToPdf({
+              title: 'Raporlama',
+              subtitle: 'Proje bazli ilerleme raporu',
+              columns: [
+                { header: 'Proje', dataKey: 'name' },
+                { header: 'Tamamlanan %', dataKey: 'tamamlanan' },
+                { header: 'Kalan %', dataKey: 'kalan' },
+              ],
+              data: projectData.map((p) => ({ name: p.name, tamamlanan: `${p.tamamlanan}%`, kalan: `${p.kalan}%` })),
+              filename: 'Raporlama.pdf',
+            })}
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          >
+            <FileDown className="w-4 h-4" /> PDF Rapor
+          </button>
         </div>
       </div>
 

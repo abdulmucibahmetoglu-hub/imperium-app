@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Search, Filter, AlertTriangle, CheckCircle, Clock, Camera } from 'lucide-react';
+import { Plus, Search, Filter, AlertTriangle, CheckCircle, Clock, Camera, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 
 const defects = [
   { id: 1, title: 'Duvar çatlağı - B Blok 3. Kat', project: 'Metropol Bursa', location: 'B Blok - Kat 3 - Daire 12', priority: 'Yüksek', status: 'Açık', reportedBy: 'Mehmet K.', date: '28.03.2024', category: 'Yapısal' },
@@ -21,9 +22,31 @@ export default function HasarEksiklik() {
           <h1 className="text-2xl font-bold text-gray-900">Hasar-Eksiklik Listesi</h1>
           <p className="text-gray-500 text-sm">Eksik ve hasarlı işlerin takibi</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" /> Yeni Kayıt
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToPdf({
+              title: 'Hasar-Eksiklik Listesi',
+              subtitle: 'Eksik ve hasarli islerin takibi',
+              columns: [
+                { header: 'Baslik', dataKey: 'title' },
+                { header: 'Proje', dataKey: 'project' },
+                { header: 'Konum', dataKey: 'location' },
+                { header: 'Oncelik', dataKey: 'priority' },
+                { header: 'Durum', dataKey: 'status' },
+                { header: 'Kategori', dataKey: 'category' },
+                { header: 'Tarih', dataKey: 'date' },
+              ],
+              data: defects.map((d) => ({ title: d.title, project: d.project, location: d.location, priority: d.priority, status: d.status, category: d.category, date: d.date })),
+              filename: 'Hasar_Eksiklik.pdf',
+            })}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <Plus className="w-4 h-4" /> Yeni Kayıt
+          </button>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-3 gap-4">

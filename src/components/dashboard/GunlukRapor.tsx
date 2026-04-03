@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Search, Calendar, CloudSun, Wind, Thermometer, FileText } from 'lucide-react';
+import { Plus, Search, Calendar, CloudSun, Wind, Thermometer, FileText, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 
 const reports = [
   {
@@ -33,9 +34,31 @@ export default function GunlukRapor() {
           <h1 className="text-2xl font-bold text-gray-900">Günlük Rapor</h1>
           <p className="text-gray-500 text-sm">Şantiye günlük raporlarını görüntüleyin</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" /> Yeni Rapor
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToPdf({
+              title: 'Gunluk Rapor',
+              subtitle: 'Santiye gunluk raporlari',
+              columns: [
+                { header: 'Tarih', dataKey: 'date' },
+                { header: 'Proje', dataKey: 'project' },
+                { header: 'Yazar', dataKey: 'author' },
+                { header: 'Hava', dataKey: 'weather' },
+                { header: 'Sicaklik', dataKey: 'temp' },
+                { header: 'Isci', dataKey: 'workers' },
+                { header: 'Ozet', dataKey: 'summary' },
+              ],
+              data: reports.map((r) => ({ date: r.date, project: r.project, author: r.author, weather: r.weather, temp: r.temp, workers: String(r.workers), summary: r.summary })),
+              filename: 'Gunluk_Rapor.pdf',
+            })}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <Plus className="w-4 h-4" /> Yeni Rapor
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center gap-3">

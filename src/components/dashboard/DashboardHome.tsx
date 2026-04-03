@@ -7,7 +7,9 @@ import {
   DollarSign,
   ArrowUpRight,
   ArrowDownRight,
+  FileDown,
 } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 import {
   AreaChart,
   Area,
@@ -76,8 +78,24 @@ export default function DashboardHome() {
           <h1 className="text-2xl font-bold text-gray-900">Ana Panel</h1>
           <p className="text-gray-500 text-sm">Proje yönetim özetiniz</p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <span>Son güncelleme: Bugün, 14:30</span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToPdf({
+              title: 'Ana Panel Ozeti',
+              subtitle: 'Proje yonetim ozeti',
+              columns: [
+                { header: 'Metrik', dataKey: 'metric' },
+                { header: 'Deger', dataKey: 'value' },
+                { header: 'Degisim', dataKey: 'change' },
+              ],
+              data: stats.map((s) => ({ metric: s.label, value: s.value, change: s.change })),
+              filename: 'Ana_Panel.pdf',
+            })}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </button>
+          <span className="text-sm text-gray-500">Son güncelleme: Bugün, 14:30</span>
         </div>
       </div>
 

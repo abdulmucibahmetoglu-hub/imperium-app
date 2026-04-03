@@ -25,7 +25,9 @@ import {
   Menu,
   X,
   Search,
+  Palette,
 } from 'lucide-react';
+import { useTheme, type ThemeName } from '../context/ThemeContext';
 
 import DashboardHome from '../components/dashboard/DashboardHome';
 import ProjeYonetimi from '../components/dashboard/ProjeYonetimi';
@@ -69,26 +71,36 @@ export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { themeName, setThemeName, theme: colors } = useTheme();
+
+  const themeOptions: { name: ThemeName; label: string; color: string }[] = [
+    { name: 'ocean', label: 'Okyanus', color: 'bg-blue-500' },
+    { name: 'emerald', label: 'Zümrüt', color: 'bg-emerald-500' },
+    { name: 'sunset', label: 'Gün Batımı', color: 'bg-orange-500' },
+    { name: 'purple', label: 'Mor', color: 'bg-purple-500' },
+    { name: 'rose', label: 'Gül', color: 'bg-rose-500' },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 bg-gray-900 text-white transition-all duration-300 ${
+        className={`fixed inset-y-0 left-0 z-50 ${colors.sidebarBg} text-white transition-all duration-300 ${
           sidebarOpen ? 'w-64' : 'w-16'
         } hidden lg:flex flex-col`}
       >
-        <div className="flex items-center gap-2 p-4 border-b border-gray-800">
+        <div className={`flex items-center gap-2 p-4 border-b ${colors.sidebarBorder}`}>
           <Link to="/" className="flex items-center gap-2">
             <div className="relative flex-shrink-0">
-              <Cloud className="w-8 h-8 text-blue-400" />
+              <Cloud className={`w-8 h-8 ${colors.accent}`} />
               <Cloud className="w-5 h-5 text-orange-400 absolute -top-1 -right-1" />
             </div>
             {sidebarOpen && (
-              <span className="text-lg font-bold text-blue-400">
-                Yapı<span className="text-white">Bulut</span>
+              <span className={`text-lg font-bold ${colors.accent}`}>
+                YapıBulut
               </span>
             )}
           </Link>
@@ -104,8 +116,8 @@ export default function DashboardPage() {
                   to={item.path}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                     isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                      ? `${colors.sidebarActive} text-white`
+                      : `text-gray-300 ${colors.sidebarHover} hover:text-white`
                   }`}
                   title={!sidebarOpen ? item.label : undefined}
                 >
@@ -119,7 +131,7 @@ export default function DashboardPage() {
 
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-4 border-t border-gray-800 text-gray-400 hover:text-white text-sm"
+          className={`p-4 border-t ${colors.sidebarBorder} text-gray-400 hover:text-white text-sm`}
         >
           {sidebarOpen ? '« Küçült' : '»'}
         </button>
@@ -129,15 +141,15 @@ export default function DashboardPage() {
       {mobileSidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setMobileSidebarOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-gray-900 text-white overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b border-gray-800">
+          <aside className={`absolute left-0 top-0 bottom-0 w-64 ${colors.sidebarBg} text-white overflow-y-auto`}>
+            <div className={`flex items-center justify-between p-4 border-b ${colors.sidebarBorder}`}>
               <Link to="/" className="flex items-center gap-2">
                 <div className="relative">
-                  <Cloud className="w-8 h-8 text-blue-400" />
+                  <Cloud className={`w-8 h-8 ${colors.accent}`} />
                   <Cloud className="w-5 h-5 text-orange-400 absolute -top-1 -right-1" />
                 </div>
-                <span className="text-lg font-bold text-blue-400">
-                  Yapı<span className="text-white">Bulut</span>
+                <span className={`text-lg font-bold ${colors.accent}`}>
+                  YapıBulut
                 </span>
               </Link>
               <button onClick={() => setMobileSidebarOpen(false)}>
@@ -154,8 +166,8 @@ export default function DashboardPage() {
                     onClick={() => setMobileSidebarOpen(false)}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                       isActive
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-300 hover:bg-gray-800'
+                        ? `${colors.sidebarActive} text-white`
+                        : `text-gray-300 ${colors.sidebarHover}`
                     }`}
                   >
                     <item.icon className="w-5 h-5" />
@@ -190,7 +202,35 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              {/* Theme selector */}
+              <div className="relative">
+                <button
+                  onClick={() => { setThemeMenuOpen(!themeMenuOpen); setUserMenuOpen(false); }}
+                  className={`p-2 rounded-lg hover:bg-gray-100 transition-colors ${colors.primary}`}
+                  title="Tema Seç"
+                >
+                  <Palette className="w-5 h-5" />
+                </button>
+                {themeMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border py-2 z-50">
+                    <p className="px-3 pb-2 text-xs font-semibold text-gray-400 uppercase">Tema Seç</p>
+                    {themeOptions.map((t) => (
+                      <button
+                        key={t.name}
+                        onClick={() => { setThemeName(t.name); setThemeMenuOpen(false); }}
+                        className={`flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-50 transition-colors ${
+                          themeName === t.name ? 'font-semibold text-gray-900' : 'text-gray-600'
+                        }`}
+                      >
+                        <div className={`w-4 h-4 rounded-full ${t.color} ${themeName === t.name ? 'ring-2 ring-offset-2 ring-gray-400' : ''}`} />
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <button className="relative">
                 <Bell className="w-5 h-5 text-gray-500" />
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">
@@ -200,10 +240,10 @@ export default function DashboardPage() {
 
               <div className="relative">
                 <button
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  onClick={() => { setUserMenuOpen(!userMenuOpen); setThemeMenuOpen(false); }}
                   className="flex items-center gap-2"
                 >
-                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                  <div className={`w-8 h-8 ${colors.primaryBg} rounded-full flex items-center justify-center text-white text-sm font-medium`}>
                     AY
                   </div>
                   <span className="text-sm text-gray-700 hidden sm:block">Admin</span>
@@ -211,7 +251,7 @@ export default function DashboardPage() {
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border py-1 z-50">
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border py-1 z-50">
                     <Link to="/dashboard/ayarlar" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                       <Settings className="w-4 h-4" /> Ayarlar
                     </Link>

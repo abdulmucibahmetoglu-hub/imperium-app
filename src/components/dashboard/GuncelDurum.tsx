@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Search, Filter, ChevronDown, ChevronRight } from 'lucide-react';
+import { Search, Filter, ChevronDown, ChevronRight, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 
 const projects = [
   {
@@ -33,9 +34,29 @@ export default function GuncelDurum() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Güncel Durum Takipleri</h1>
-        <p className="text-gray-500 text-sm">Daire, Blok veya Bağımsız bölümlerin tamamlanma oranları</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Güncel Durum Takipleri</h1>
+          <p className="text-gray-500 text-sm">Daire, Blok veya Bağımsız bölümlerin tamamlanma oranları</p>
+        </div>
+        <button
+          onClick={() => exportToPdf({
+            title: 'Guncel Durum Takipleri',
+            subtitle: 'Blok bazli tamamlanma oranlari',
+            columns: [
+              { header: 'Proje', dataKey: 'project' },
+              { header: 'Blok', dataKey: 'block' },
+              { header: 'Toplam Kat', dataKey: 'floors' },
+              { header: 'Tamamlanan', dataKey: 'completed' },
+              { header: 'Oran', dataKey: 'percentage' },
+            ],
+            data: projects.flatMap((p) => p.blocks.map((b) => ({ project: p.name, block: b.name, floors: String(b.floors), completed: String(b.completed), percentage: `${b.percentage}%` }))),
+            filename: 'Guncel_Durum.pdf',
+          })}
+          className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <FileDown className="w-4 h-4" /> PDF
+        </button>
       </div>
 
       <div className="flex items-center gap-3">

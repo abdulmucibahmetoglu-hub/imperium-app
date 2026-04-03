@@ -17,22 +17,28 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-50 to-blue-100 items-center justify-center p-12">
-        <div className="text-center">
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-12">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950" />
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+        <div className="relative text-center text-white">
           <Link to="/" className="inline-flex items-center gap-3 mb-8">
             <div className="relative">
-              <Cloud className="w-16 h-16 text-blue-500" />
+              <Cloud className="w-16 h-16 text-blue-400" />
               <Cloud className="w-10 h-10 text-orange-400 absolute -top-2 -right-2" />
             </div>
-            <span className="text-4xl font-bold text-blue-600">
-              Yapı<span className="text-blue-800">Bulut</span>
+            <span className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+              YapıBulut
             </span>
           </Link>
-          <p className="text-gray-500 text-lg mt-4">İnşaat Yönetim Platformu</p>
+          <p className="text-blue-300/70 text-lg mt-4">İnşaat Yönetim Platformu</p>
           <div className="mt-12 grid grid-cols-2 gap-4 max-w-md mx-auto">
             {['Proje Yönetimi', 'Teknik Ofis', 'Satın Alma', 'Finans'].map((item) => (
-              <div key={item} className="bg-white/60 backdrop-blur p-4 rounded-xl shadow-sm">
-                <p className="text-sm font-medium text-gray-700">{item}</p>
+              <div key={item} className="bg-white/5 backdrop-blur border border-white/10 p-4 rounded-xl">
+                <p className="text-sm font-medium text-blue-200">{item}</p>
               </div>
             ))}
           </div>
@@ -48,8 +54,8 @@ export default function LoginPage() {
                 <Cloud className="w-12 h-12 text-blue-500" />
                 <Cloud className="w-7 h-7 text-orange-400 absolute -top-1 -right-1" />
               </div>
-              <span className="text-2xl font-bold text-blue-600">
-                Yapı<span className="text-blue-800">Bulut</span>
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+                YapıBulut
               </span>
             </Link>
             <h2 className="text-xl font-semibold text-gray-800">Hesabınıza giriş yapın</h2>
@@ -62,7 +68,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
               />
               <Mail className="w-5 h-5 text-gray-400 absolute right-3 top-3.5" />
             </div>
@@ -73,7 +79,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
               />
               <button
                 type="button"
@@ -105,7 +111,7 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-blue-200 transition-all"
             >
               GİRİŞ YAP
             </button>

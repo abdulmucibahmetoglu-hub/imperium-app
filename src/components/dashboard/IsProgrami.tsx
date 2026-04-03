@@ -1,4 +1,5 @@
-import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 import { useState } from 'react';
 
 const tasks = [
@@ -25,6 +26,24 @@ export default function IsProgrami() {
           <p className="text-gray-500 text-sm">Proje planının iş akışını görüntüleyin</p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToPdf({
+              title: 'Is Programi',
+              subtitle: 'Proje planinin is akisi',
+              columns: [
+                { header: 'Is Kalemi', dataKey: 'name' },
+                { header: 'Proje', dataKey: 'project' },
+                { header: 'Baslangic Hafta', dataKey: 'start' },
+                { header: 'Sure (Hafta)', dataKey: 'duration' },
+                { header: 'Ilerleme', dataKey: 'progress' },
+              ],
+              data: tasks.map((t) => ({ name: t.name, project: t.project, start: String(t.start), duration: String(t.duration), progress: `${t.progress}%` })),
+              filename: 'Is_Programi.pdf',
+            })}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </button>
           <button className="p-2 border rounded-lg hover:bg-gray-50"><ChevronLeft className="w-4 h-4" /></button>
           <div className="flex items-center gap-2 px-4 py-2 border rounded-lg">
             <Calendar className="w-4 h-4 text-gray-400" />

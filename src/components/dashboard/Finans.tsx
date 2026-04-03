@@ -1,4 +1,5 @@
-import { DollarSign, TrendingUp, TrendingDown, CreditCard, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, CreditCard, ArrowUpRight, ArrowDownRight, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 
 const monthlyData = [
@@ -21,9 +22,29 @@ const transactions = [
 export default function Finans() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Finans</h1>
-        <p className="text-gray-500 text-sm">Tahsilat ve finansal varlıklarınızı yönetin</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Finans</h1>
+          <p className="text-gray-500 text-sm">Tahsilat ve finansal varlıklarınızı yönetin</p>
+        </div>
+        <button
+          onClick={() => exportToPdf({
+            title: 'Finans',
+            subtitle: 'Son islemler',
+            columns: [
+              { header: 'Aciklama', dataKey: 'desc' },
+              { header: 'Proje', dataKey: 'project' },
+              { header: 'Tarih', dataKey: 'date' },
+              { header: 'Tur', dataKey: 'type' },
+              { header: 'Tutar', dataKey: 'amount' },
+            ],
+            data: transactions.map((t) => ({ desc: t.desc, project: t.project, date: t.date, type: t.type === 'gelir' ? 'Gelir' : 'Gider', amount: t.amount })),
+            filename: 'Finans.pdf',
+          })}
+          className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <FileDown className="w-4 h-4" /> PDF
+        </button>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">

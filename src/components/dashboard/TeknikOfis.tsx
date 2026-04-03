@@ -1,4 +1,5 @@
-import { FileText, Calculator, Receipt, Plus, Search, Filter, Download } from 'lucide-react';
+import { FileText, Calculator, Receipt, Plus, Search, Filter, Download, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 
 const tabs = [
   { id: 'kesif', label: 'Keşif', icon: FileText },
@@ -26,9 +27,29 @@ export default function TeknikOfis() {
           <h1 className="text-2xl font-bold text-gray-900">Teknik Ofis</h1>
           <p className="text-gray-500 text-sm">Keşif, Sözleşme ve Hakediş yönetimi</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" /> Yeni Kayıt
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToPdf({
+              title: 'Teknik Ofis',
+              subtitle: 'Kesif verileri',
+              columns: [
+                { header: 'Is Kalemi', dataKey: 'name' },
+                { header: 'Proje', dataKey: 'project' },
+                { header: 'Tutar', dataKey: 'amount' },
+                { header: 'Durum', dataKey: 'status' },
+                { header: 'Tarih', dataKey: 'date' },
+              ],
+              data: kesifData.map((k) => ({ name: k.name, project: k.project, amount: k.amount, status: k.status, date: k.date })),
+              filename: 'Teknik_Ofis.pdf',
+            })}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <Plus className="w-4 h-4" /> Yeni Kayıt
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-2 bg-white p-1 rounded-lg border w-fit">

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Search, Filter, Package, Truck, CheckCircle, Clock } from 'lucide-react';
+import { Plus, Search, Filter, Package, Truck, CheckCircle, Clock, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 
 const orders = [
   { id: 'SIP-001', items: 'Çimento (CEM I 42.5R)', quantity: '500 ton', project: 'Metropol Bursa', block: 'A Blok', status: 'Teslim Edildi', date: '20.03.2024', deliveryDate: '28.03.2024' },
@@ -20,9 +21,31 @@ export default function Siparisler() {
           <h1 className="text-2xl font-bold text-gray-900">Siparişler</h1>
           <p className="text-gray-500 text-sm">Sipariş süreçlerini başından sonuna kadar takip edin</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" /> Yeni Sipariş
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToPdf({
+              title: 'Siparisler',
+              subtitle: 'Siparis takip listesi',
+              columns: [
+                { header: 'Siparis No', dataKey: 'id' },
+                { header: 'Urun', dataKey: 'items' },
+                { header: 'Miktar', dataKey: 'quantity' },
+                { header: 'Proje', dataKey: 'project' },
+                { header: 'Siparis Tarihi', dataKey: 'date' },
+                { header: 'Teslim Tarihi', dataKey: 'deliveryDate' },
+                { header: 'Durum', dataKey: 'status' },
+              ],
+              data: orders.map((o) => ({ id: o.id, items: o.items, quantity: o.quantity, project: `${o.project} - ${o.block}`, date: o.date, deliveryDate: o.deliveryDate, status: o.status })),
+              filename: 'Siparisler.pdf',
+            })}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <Plus className="w-4 h-4" /> Yeni Sipariş
+          </button>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-4 gap-4">

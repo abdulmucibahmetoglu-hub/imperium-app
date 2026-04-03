@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ShieldCheck, AlertTriangle, ClipboardCheck, FileSearch, Plus, Search } from 'lucide-react';
+import { ShieldCheck, AlertTriangle, ClipboardCheck, FileSearch, Plus, Search, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 
 const inspections = [
   { id: 1, title: 'Beton Döküm Kontrolü', project: 'Metropol Bursa', inspector: 'Mehmet K.', date: '28.03.2024', result: 'Uygun', score: 95 },
@@ -20,9 +21,30 @@ export default function KaliteGuvenlik() {
           <h1 className="text-2xl font-bold text-gray-900">Kalite & Güvenlik</h1>
           <p className="text-gray-500 text-sm">Denetlemeler ve kalite kontrol süreçleri</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" /> Yeni Denetleme
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToPdf({
+              title: 'Kalite & Guvenlik',
+              subtitle: 'Denetleme listesi',
+              columns: [
+                { header: 'Denetleme', dataKey: 'title' },
+                { header: 'Proje', dataKey: 'project' },
+                { header: 'Denetci', dataKey: 'inspector' },
+                { header: 'Tarih', dataKey: 'date' },
+                { header: 'Puan', dataKey: 'score' },
+                { header: 'Sonuc', dataKey: 'result' },
+              ],
+              data: inspections.map((i) => ({ title: i.title, project: i.project, inspector: i.inspector, date: i.date, score: String(i.score), result: i.result })),
+              filename: 'Kalite_Guvenlik.pdf',
+            })}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <Plus className="w-4 h-4" /> Yeni Denetleme
+          </button>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-4 gap-4">

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Search, ClipboardCheck, FileCheck, ListChecks } from 'lucide-react';
+import { Plus, Search, ClipboardCheck, FileCheck, ListChecks, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 
 const forms = [
   { id: 1, name: 'Beton Döküm Kontrol Formu', type: 'Yapı Denetim', project: 'Metropol Bursa', completedBy: 'Mehmet K.', date: '28.03.2024', status: 'Tamamlandı', score: '92/100' },
@@ -20,9 +21,31 @@ export default function Denetlemeler() {
           <h1 className="text-2xl font-bold text-gray-900">Denetlemeler</h1>
           <p className="text-gray-500 text-sm">Anketler, kontrol formları ve denetim raporları</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" /> Yeni Form
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToPdf({
+              title: 'Denetlemeler',
+              subtitle: 'Kontrol formlari ve denetim raporlari',
+              columns: [
+                { header: 'Form Adi', dataKey: 'name' },
+                { header: 'Tur', dataKey: 'type' },
+                { header: 'Proje', dataKey: 'project' },
+                { header: 'Dolduran', dataKey: 'completedBy' },
+                { header: 'Tarih', dataKey: 'date' },
+                { header: 'Puan', dataKey: 'score' },
+                { header: 'Durum', dataKey: 'status' },
+              ],
+              data: forms.map((f) => ({ name: f.name, type: f.type, project: f.project, completedBy: f.completedBy, date: f.date, score: f.score, status: f.status })),
+              filename: 'Denetlemeler.pdf',
+            })}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <Plus className="w-4 h-4" /> Yeni Form
+          </button>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-3 gap-4">

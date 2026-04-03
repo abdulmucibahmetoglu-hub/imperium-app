@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Search, Filter, Package, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Search, Filter, Package, Clock, CheckCircle, XCircle, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 
 const orders = [
   { id: 'SA-001', product: 'Çimento (CEM I 42.5R)', quantity: '500 ton', supplier: 'Bursa Çimento A.Ş.', project: 'Metropol Bursa', status: 'Onaylandı', date: '10.03.2024', amount: '₺875.000' },
@@ -21,9 +22,31 @@ export default function SatinAlma() {
           <h1 className="text-2xl font-bold text-gray-900">Satın Alma</h1>
           <p className="text-gray-500 text-sm">Ürün talepleri ve siparişlerinizi yönetin</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" /> Yeni Talep
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToPdf({
+              title: 'Satin Alma',
+              subtitle: 'Siparis listesi',
+              columns: [
+                { header: 'Siparis No', dataKey: 'id' },
+                { header: 'Urun', dataKey: 'product' },
+                { header: 'Miktar', dataKey: 'quantity' },
+                { header: 'Tedarikci', dataKey: 'supplier' },
+                { header: 'Proje', dataKey: 'project' },
+                { header: 'Tutar', dataKey: 'amount' },
+                { header: 'Durum', dataKey: 'status' },
+              ],
+              data: orders.map((o) => ({ id: o.id, product: o.product, quantity: o.quantity, supplier: o.supplier, project: o.project, amount: o.amount, status: o.status })),
+              filename: 'Satin_Alma.pdf',
+            })}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <Plus className="w-4 h-4" /> Yeni Talep
+          </button>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-4 gap-4">

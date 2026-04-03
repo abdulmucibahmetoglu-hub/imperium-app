@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Search, Filter, UserCheck, Clock, AlertCircle, CheckCircle } from 'lucide-react';
+import { Plus, Search, Filter, UserCheck, Clock, AlertCircle, CheckCircle, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 
 const tasks = [
   { id: 1, title: 'Beton numune alımı', assignee: 'Mehmet K.', assignedBy: 'Ali D.', project: 'Metropol Bursa', priority: 'Yüksek', status: 'Devam Ediyor', startDate: '25.03.2024', dueDate: '02.04.2024', progress: 60 },
@@ -21,9 +22,31 @@ export default function Gorevlendirme() {
           <h1 className="text-2xl font-bold text-gray-900">Görevlendirme</h1>
           <p className="text-gray-500 text-sm">Ekip üyelerine görev atayın ve takip edin</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" /> Yeni Görev
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToPdf({
+              title: 'Gorevlendirme',
+              subtitle: 'Gorev listesi',
+              columns: [
+                { header: 'Gorev', dataKey: 'title' },
+                { header: 'Atanan', dataKey: 'assignee' },
+                { header: 'Atayan', dataKey: 'assignedBy' },
+                { header: 'Proje', dataKey: 'project' },
+                { header: 'Oncelik', dataKey: 'priority' },
+                { header: 'Ilerleme', dataKey: 'progress' },
+                { header: 'Durum', dataKey: 'status' },
+              ],
+              data: tasks.map((t) => ({ title: t.title, assignee: t.assignee, assignedBy: t.assignedBy, project: t.project, priority: t.priority, progress: `${t.progress}%`, status: t.status })),
+              filename: 'Gorevlendirme.pdf',
+            })}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <Plus className="w-4 h-4" /> Yeni Görev
+          </button>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-4 gap-4">

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Search, MessageSquare, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Plus, Search, MessageSquare, Clock, CheckCircle, AlertCircle, FileDown } from 'lucide-react';
+import { exportToPdf } from '../../utils/pdfExport';
 
 const requests = [
   { id: 'BT-001', subject: 'Elektrik projesi revizyon talebi', from: 'Mehmet K.', to: 'Ali D.', project: 'Metropol Bursa', priority: 'Yüksek', status: 'Açık', date: '28.03.2024', dueDate: '02.04.2024' },
@@ -20,9 +21,31 @@ export default function BilgiTalepleri() {
           <h1 className="text-2xl font-bold text-gray-900">Bilgi Talepleri</h1>
           <p className="text-gray-500 text-sm">Proje ekibinden bilgi talep edin ve takip edin</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" /> Yeni Talep
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToPdf({
+              title: 'Bilgi Talepleri',
+              subtitle: 'Bilgi talep listesi',
+              columns: [
+                { header: 'No', dataKey: 'id' },
+                { header: 'Konu', dataKey: 'subject' },
+                { header: 'Gonderen', dataKey: 'from' },
+                { header: 'Alici', dataKey: 'to' },
+                { header: 'Proje', dataKey: 'project' },
+                { header: 'Oncelik', dataKey: 'priority' },
+                { header: 'Durum', dataKey: 'status' },
+              ],
+              data: requests.map((r) => ({ id: r.id, subject: r.subject, from: r.from, to: r.to, project: r.project, priority: r.priority, status: r.status })),
+              filename: 'Bilgi_Talepleri.pdf',
+            })}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <Plus className="w-4 h-4" /> Yeni Talep
+          </button>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-3 gap-4">

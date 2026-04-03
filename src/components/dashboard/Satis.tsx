@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Plus, Search, Users, TrendingUp, Target, DollarSign } from 'lucide-react';
+import { Plus, Search, Users, TrendingUp, Target, DollarSign, FileDown } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { exportToPdf } from '../../utils/pdfExport';
 
 const pieData = [
   { name: 'Satıldı', value: 45, color: '#22c55e' },
@@ -27,9 +28,30 @@ export default function Satis() {
           <h1 className="text-2xl font-bold text-gray-900">Satış</h1>
           <p className="text-gray-500 text-sm">Müşteriler, teklifler ve satış durumu</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" /> Yeni Müşteri
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToPdf({
+              title: 'Satis',
+              subtitle: 'Musteri ve satis listesi',
+              columns: [
+                { header: 'Musteri', dataKey: 'name' },
+                { header: 'Telefon', dataKey: 'phone' },
+                { header: 'Proje', dataKey: 'project' },
+                { header: 'Birim', dataKey: 'unit' },
+                { header: 'Tutar', dataKey: 'amount' },
+                { header: 'Durum', dataKey: 'status' },
+              ],
+              data: customers.map((c) => ({ name: c.name, phone: c.phone, project: c.project, unit: c.unit, amount: c.amount, status: c.status })),
+              filename: 'Satis.pdf',
+            })}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <Plus className="w-4 h-4" /> Yeni Müşteri
+          </button>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-4 gap-4">
